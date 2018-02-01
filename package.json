@@ -1,7 +1,7 @@
 {
   "name": "blockchat",
   "version": "0.0.0",
-  "description": "A simple Blockstack app using ReactJS",
+  "description": "Encrypted messaging using Blockstack",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
@@ -34,9 +34,10 @@
     "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
-    "blockstack": "^0.15.0",
+    "blockstack": "^0.15.1",
     "bootstrap": "^3.3.7",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-router-dom": "^4.2.2"
   }
 }
