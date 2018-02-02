@@ -20,10 +20,14 @@ export class Home extends Component {
 
       render() {
         return (
-            <div>
-                <h3> Home Component </h3>
-                <SideBar/>
-                <ChatScreen/>
+            <div className="row">
+                <div className="col-lg-offset-0 col-lg-3 col-md-offset-0 col-md-4">
+                    <SideBar/>
+                </div>
+
+                <div className="col-lg-9">
+                    <ChatScreen/>
+                </div>
             </div>
         );
       }

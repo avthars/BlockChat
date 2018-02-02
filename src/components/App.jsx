@@ -43,16 +43,22 @@ export default class App extends Component {
   }
 
   render() {
-    return (
-      <div className="site-wrapper">
-        <div className="site-wrapper-inner">
-          { !isUserSignedIn() ?
-            <Signin handleSignIn={ this.handleSignIn } />
-            : <Home handleSignOut={ this.handleSignOut } />
-          }
+    if (!isUserSignedIn()) {
+      return (
+        <div className="site-wrapper">
+          <div className="site-wrapper-inner">
+            { !isUserSignedIn() ?
+              <Signin handleSignIn={ this.handleSignIn } />
+              : <Home handleSignOut={ this.handleSignOut } />
+            }
+          </div>
         </div>
-      </div>
-    );
+      );
+      
+    } else {
+     return (<Home/>);
+    }
+    
   }
 
   componentWillMount() {
