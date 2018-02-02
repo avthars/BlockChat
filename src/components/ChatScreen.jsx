@@ -7,6 +7,7 @@
     \brief Main screen where messages are displayed, composed and sent.
 */
 import React, { Component, Link } from 'react';
+import { InputBar } from './InputBar.jsx';
 
 export class ChatScreen extends Component {
     
@@ -19,6 +20,7 @@ export class ChatScreen extends Component {
         return (
             <div>
                 <h3> Chat Screen </h3>
+                <InputBar/>
             </div>
         );
       }
