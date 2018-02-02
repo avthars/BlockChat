@@ -4,13 +4,13 @@
 // Maintainer:
 
 /*! \file App.jsx
-    \brief Has the main features and functionality of the app including the event handlers for
-    signing in and out of the app
+    \brief Parent component for app. Handles all interactions with blockstack storage.
+           Houses state for use in child components.
 */
 
 import React, { Component, Link } from 'react';
-import Profile from './Profile.jsx';
 import Signin from './Signin.jsx';
+import {Home} from './Home.jsx';
 import {
   isSignInPending,
   isUserSignedIn,
@@ -48,7 +48,7 @@ export default class App extends Component {
         <div className="site-wrapper-inner">
           { !isUserSignedIn() ?
             <Signin handleSignIn={ this.handleSignIn } />
-            : <Profile handleSignOut={ this.handleSignOut } />
+            : <Home handleSignOut={ this.handleSignOut } />
           }
         </div>
       </div>

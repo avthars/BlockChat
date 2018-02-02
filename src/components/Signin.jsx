@@ -1,3 +1,12 @@
+// Copyright (c) 2018 BlockChat
+
+// Author: Avthar
+// Maintainer:
+
+/*! \file SignIn.jsx
+    \brief Login Screen, shown to a user who has not logged into the application
+*/
+
 import React, { Component } from 'react';
 import { isUserSignedIn } from 'blockstack';
 
