@@ -2,41 +2,97 @@
 
 body {
     background: #F1F3FA;
+    height: 100%;
+    width: 100%;
+    margin: 0;
   }
-
 
 /* Profile sidebar */
 .bd-sidebar {
-    padding: 20px 0 10px 0;
-    height:100vh;
+    padding: 10px 0 0px 0;
+    height: 100vh;
     background: #fff;
+    position: relative;
+}
+.profile-sidebar {
+    height: 150px;
+    width: 100%;
+    position: relative;
 }
 
-/* Profile picture*/
+/* User profile*/
 .avatar {
-    width:100px;
-    height:100px;
+    width:50px;
+    height:50px;
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
-
-/*User name and blockstack id*/
-.user-name-id {
+.username-id {
     display: block;
     font-weight: bold;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
 }
-
-/*User status*/
 .user-status {
     display: block;
-    font-weight: italic;
     margin-left: auto;
     margin-right: auto;
     overflow-wrap: break-word;
-    width: 95%; 
+    width: 90%; 
     color: orange; 
+}
+
+/* message and search */
+.message-and-search-box {
+    border-top: 1px solid grey;
+    position: absolute;
+    width: 100%;
+    top: 160px;
+    bottom: 0;
+}
+.search-bar {
+    position: absolute;
+    margin-top: 5px;
+    margin-left: 2%;
+    width: 96%;
+
+}
+
+/* container for the messages in the sidebar */
+.messages-sidebar {
+    position: absolute;
+    width: 100%;
+    margin-top: 43px;
+}
+
+/* tile of the sidebar that has a snippet of the message */
+.sidebar-message-tile {
+    position: absolute;
+    margin-left: 2%;
+    width: 96%;
+    height: 50px;
+}
+
+/* picture of the other user sending the message */
+.other-user-pic {
+    position: absolute;
+    margin-left: 0px;
+    width: 50px;
+    height: 50px;
+}
+.message-pic {
+    position: absolute;
+    height:50px;
+    width: 50px;
+}
+
+.message-preview {
+    height: 100%;
+    margin-left: 50px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative; 
 }

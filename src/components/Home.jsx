@@ -13,8 +13,10 @@ import {Profile} from './Profile.jsx';
 
 const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
 const username = 'Felix Madutsa';
+const sendername = 'Sender Name';
 const blockStackId = 'felix.id';
-const status = 'This us just a sample status for a start. I am going high ritht now so that I can leave';
+const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
+const message_text = 'this is my message to the world, and it is this that I am writing because I feel like it and I';
 
 export class Home extends Component {
     
@@ -25,25 +27,26 @@ export class Home extends Component {
 
       render() {
         return (
-            <div className="container-fluid">
+            <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
 
                     <div className="col-12 col-lg-3 col-md-4 col-xl-2 bd-sidebar">
-                        <div class="row profile-sidebar">
-                            <div class="row profile-userpic">
+                        <div className="profile-sidebar">
+                            <div className="profile-userpic">
                                 <img src={avatarFallbackImage} className="img-rounded avatar"/>
                             </div>
 
-                            <div className="row text-center">
-                                <div className="row user-name-id">
-                                    <p className="font-weight-bold">{username + ' | ' + blockStackId} </p>
-                                </div>
-                                <div>
-                                    <p className="row user-status">{status} </p>
-                                </div>
+                            <div className="text-center username-id">
+                                <p className="font-weight-bold">{username + ' | ' + blockStackId} </p>
                             </div>
 
-                            <div className="row search-bar col-lg-offset-0 col-md-offset-0 col-lg-12 col-md-12">
+                            <div className="text-center user-status">
+                                <p>{status} </p>
+                            </div>
+                        </div>
+
+                        <div className="message-and-search-box">
+                            <div className="search-bar">
                                 <form>
                                     <div className="input-group">
                                         <div className="input-group-addon"><i className="fa fa-search"></i></div>
@@ -52,6 +55,18 @@ export class Home extends Component {
                                 </form>
                             </div>
 
+                            <div className="messages-sidebar"> 
+                                <div className="sidebar-message-tile"> 
+                                    <div className="other-user-pic">
+                                        <img src={avatarFallbackImage} className="img-rounded message-pic"/>
+                                    </div>
+
+                                    <div className="message-preview">
+                                        <p className="font-weight-bold sender-name">{sendername}</p>
+                                        <p className="message-snippet">{message_text}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
