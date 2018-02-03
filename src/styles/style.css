@@ -67,10 +67,15 @@ body {
     margin-top: 43px;
 }
 
+.table-row {
+    height: 60px;
+}
+
 /* tile of the sidebar that has a snippet of the message */
 .sidebar-message-tile {
     position: absolute;
-    margin-left: 2%;
+    margin-left: -2px;
+    margin-top: -4px;
     width: 96%;
     height: 50px;
 }
@@ -91,7 +96,12 @@ body {
 .message-preview {
     height: 100%;
     margin-left: 50px;
-    position: relative; 
+    position: relative;
+
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .sender-name {
@@ -99,9 +109,14 @@ body {
     font-style: italic;
 }
 
+.message-time {
+    float:right
+}
+
 .message-snippet {
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: -5px;
+    position: absolute; 
+    
 }
