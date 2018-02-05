@@ -177,7 +177,7 @@ export class Home extends Component {
                     <div className="col-12 col-lg-3 col-md-4 col-xl-2 bd-sidebar">
                         <div className="profile-sidebar">
                             <div className="profile-userpic">
-                                <img src={avatarFallbackImage} className="img-rounded avatar"/>
+                                <img src={this.props.userPic} className="img-rounded avatar"/>
                             </div>
 
                             <div className="text-center username-id">
@@ -209,6 +209,12 @@ export class Home extends Component {
                         <ChatScreen
                             putData = {this.putDataInStorage}
                         />
+                        <button 
+                        className = 'btn btn-primary'
+                        onClick = {this.props.handleSignOut}
+                        > 
+                        Logout
+                        </button>
                     </div>
                 </div>
             </div>
