@@ -25,7 +25,10 @@ export class ChatScreen extends Component {
     
       constructor(props) {
           super(props);
-          this.state = {messageList: [],};
+          this.state = {
+              messageList: [],
+              currContact: 'avthars.id',
+        };
       }
 
     //Function to add new message to list
@@ -38,6 +41,7 @@ export class ChatScreen extends Component {
       }, 
       () => {
         //call parent func to put in blockstack storage
+        this.props.putData(this.state.messageList, this.state.currContact);
         console.log('state in ChatScreen after calling parent func');
         console.log(this.state.messageList);
       });

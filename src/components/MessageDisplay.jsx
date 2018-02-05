@@ -20,12 +20,20 @@ export class MessageDisplay extends Component {
     
       constructor(props) {
           super(props);
-          this.state = {messageList: this.props.messageList};
+          this.state = {
+              messageList: this.props.messageList, 
+              currContactName: '',
+              currContactProfilePic: '',
+              currContact: '',
+            };
       }
 
       componentWillReceiveProps(nextProps){
           this.setState({
               messageList: nextProps.messageList,
+              currContactName: nextProps.currContactName,
+              currContactProfilePic: nextProps.currContactProfilePic,
+              currContact: nextProps.currContact,
           }, () => {console.log("Updated props in Message Display")});
       }
     

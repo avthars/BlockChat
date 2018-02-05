@@ -10,15 +10,25 @@ import React, { Component, Link } from 'react';
 import {SideBar} from './SideBar.jsx';
 import {ChatScreen} from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
+import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
 
 const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
 const username = 'Felix Madutsa';
 const sendername = 'Sender Name';
-const blockStackId = 'felix.id';
-const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
+//const blockStackId = 'felix.id';
+//const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
 const message_text = 'this is my message to the world, and it is this that I am writing because I feel like it and I';
 const time_sent = new Date();
 
+//dummy messages to display in table
 const MESSAGES = [
     {id: 1, sender: username, message: message_text, time_received: time_sent.getDate()},
     {id: 2, sender: username, message: message_text, time_received: time_sent.getDate() + 1},
@@ -30,7 +40,10 @@ const MESSAGES = [
     {id: 8, sender: username, message: message_text, time_received: time_sent.getDate() + 7}
   ];
 
-
+//**************************************************************
+// MessageTile component: helper component
+// unit for contact display
+//**************************************************************
 class MessageTile extends React.Component {
 
     constructor(props) {
@@ -71,14 +84,92 @@ class MessageTile extends React.Component {
     }
 }
 
+//**************************************************************
+// Home component: manages state of messages and
+//**************************************************************
 export class Home extends Component {
     
       constructor(props) {
           super(props);
-          this.state = {}; 
+          this.state = {
+            //user info  
+            userName: this.props.userName,
+            userId: this.props.userId,
+            userBio: this.props.userBio,
+            contactList: this.props.contactList,
+            //contact currently chatting to
+            currContact: '',
+            //messages for current chat
+            messageList: [],
+            isLoading: false,
+          }; 
+        this.putDataInStorage  = this.putDataInStorage.bind(this);
+        this.fetchMessageData  = this.fetchMessageData.bind(this);
       }
 
+      //update component when parent state changes
+      componentWillReceiveProps(nextProps) {
+          this.setState({
+              userName: nextProps.userName,
+              userId:nextProps.userId,
+              userBio: nextProps.userBio,
+              contactList: nextProps.contactList,
+          }, () => {
+              console.log('Home state:');
+              console.log(this.state);
+          });
+      }
+
+    //puts contact data into users blockstack storage
+    putDataInStorage(data, contactName) {
+        //debugging:
+        console.log('In putData()');
+        console.log("Data to be put in storage");
+        console.log(data);
+        //TO DO: strip contact name of .id
+        var rawContact = contactName.replace('.id','');
+        var STORAGE_FILE_PATH = rawContact + '.json';
+        var options = {encrypt: false};
+        let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
+        this.setState({messageList: data}, () => {
+        console.log('updating state after putting msg in storage');
+        console.log(this.state.messageList);});
+        if (!success){
+        console.log("ERROR: Could not put file in storage");
+        }
+        else {
+        console.log("SUCCESS: PUT FILE IN USER STORAGE");}
+    }
+
+    //messages conversation from contactId
+    fetchMessageData(contactId){
+        this.setState({isLoading: true});
+        const options = { username: contactId  };
+        const FILE_NAME = this.state.userID.replace('.id','') + '.json';
+        var oldMessages = this.state.messageList;
+        getFile(statusFileName, options)
+                .then((file) => {
+                  var msgs = JSON.parse(file || '[]')
+                  this.setState({
+                    messageList: msgs,
+                  }, () => {
+                      console.log('Messages after fetching messages from contact' + contactId);
+                      console.log(this.state.messageList);
+                  })
+                })
+                .catch((error) => {
+                  console.log('could not fetch messages from ' + contactId)
+                  //reset state back to before load
+                  this.setState({messageList: oldMessages});
+                })
+                .finally(() => {
+                  this.setState({isLoading: false});
+                })
+    }
+
+    
       render() {
+          
         return (
             <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
@@ -90,11 +181,11 @@ export class Home extends Component {
                             </div>
 
                             <div className="text-center username-id">
-                                <p className="font-weight-bold">{username + ' | ' + blockStackId} </p>
+                                <p className="font-weight-bold">{this.props.userName + ' | ' + this.props.userId} </p>
                             </div>
 
                             <div className="text-center user-status">
-                                <p>{status} </p>
+                                <p>{this.props.userBio} </p>
                             </div>
                         </div>
 
@@ -115,7 +206,9 @@ export class Home extends Component {
                     </div>
 
                     <div className="col-lg-9">
-                        <ChatScreen/>
+                        <ChatScreen
+                            putData = {this.putDataInStorage}
+                        />
                     </div>
                 </div>
             </div>
