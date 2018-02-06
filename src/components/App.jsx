@@ -43,7 +43,7 @@ export default class App extends Component {
       userName: 'Nameless',
       userId: 'name_less',
       userBio: '',
-      contactList: [],
+      contactList: ['avthars.id', 'felix.id', 'radjei.id'],
       contactIndex: 0,
       isLoading: 'false',
     };

@@ -26,10 +26,19 @@ export class ChatScreen extends Component {
       constructor(props) {
           super(props);
           this.state = {
-              messageList: [],
-              currContact: 'avthars.id',
+              messageList: this.props.messageList,
+              currContact: this.props.currContact,
         };
       }
+
+    componentWillReceiveProps(nextProps){
+        this.setState({
+            messageList: nextProps.messageList,
+            currContact: nextProps.currContact,
+        });
+
+    }
+
 
     //Function to add new message to list
     addMessage(newMsg){

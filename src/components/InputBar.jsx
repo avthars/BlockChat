@@ -29,6 +29,7 @@ export class InputBar extends Component {
         this.setState({text: event.target.value});
       }
 
+      
       //When user submits tweet
       onSendMessage(event){
         event.preventDefault();
@@ -48,7 +49,7 @@ export class InputBar extends Component {
           id: idnum, 
           text: this.state.text, 
           by: this.props.userId, 
-          date: new Date(),
+          date: Date.now(),
           read: false,
           delivered: false,
           deleted: true,

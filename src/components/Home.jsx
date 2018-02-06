@@ -23,7 +23,7 @@ import * as blockstack from 'blockstack';
 const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
 const username = 'Felix Madutsa';
 const sendername = 'Sender Name';
-//const blockStackId = 'felix.id';
+//const blockStackId = 'f.id';
 //const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
 const message_text = 'this is my message to the world, and it is this that I am writing because I feel like it and I';
 const time_sent = new Date();
@@ -97,8 +97,8 @@ export class Home extends Component {
             userId: this.props.userId,
             userBio: this.props.userBio,
             contactList: this.props.contactList,
-            //contact currently chatting to
-            currContact: '',
+            //contact currently chatting to -- hard coded to rich
+            currContact: 'felix.id',
             //messages for current chat
             messageList: [],
             isLoading: false,
@@ -129,6 +129,7 @@ export class Home extends Component {
         //TO DO: strip contact name of .id
         var rawContact = contactName.replace('.id','');
         var STORAGE_FILE_PATH = rawContact + '.json';
+        console.log('Filename: ' + STORAGE_FILE_PATH);
         var options = {encrypt: false};
         let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
         this.setState({messageList: data}, () => {
@@ -145,15 +146,16 @@ export class Home extends Component {
     fetchMessageData(contactId){
         this.setState({isLoading: true});
         const options = { username: contactId  };
-        const FILE_NAME = this.state.userID.replace('.id','') + '.json';
+        const FILE_NAME = this.state.userId.replace('.id','') + '.json';
+        console.log(FILE_NAME);
         var oldMessages = this.state.messageList;
-        getFile(statusFileName, options)
+        getFile(FILE_NAME, options)
                 .then((file) => {
                   var msgs = JSON.parse(file || '[]')
                   this.setState({
                     messageList: msgs,
                   }, () => {
-                      console.log('Messages after fetching messages from contact' + contactId);
+                      console.log('Messages after fetching messages from contact ' + contactId);
                       console.log(this.state.messageList);
                   })
                 })
@@ -167,6 +169,16 @@ export class Home extends Component {
                 })
     }
 
+    componentDidMount(){
+        this.setState({isLoading: true},() => {
+            this.fetchMessageData(this.state.currContact);
+        });
+
+        this.setState({isLoading:false}, () => {
+            console.log('state after component mount: ');
+            console.log(this.state);
+        });
+    }
     
       render() {
           
@@ -208,6 +220,8 @@ export class Home extends Component {
                     <div className="col-lg-9">
                         <ChatScreen
                             putData = {this.putDataInStorage}
+                            messageList = {this.state.messageList}
+                            currContact = {this.state.currContact}
                         />
                         <button 
                         className = 'btn btn-primary'
