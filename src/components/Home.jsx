@@ -97,8 +97,9 @@ export class Home extends Component {
             userId: this.props.userId,
             userBio: this.props.userBio,
             contactList: this.props.contactList,
-            //contact currently chatting to -- hard coded to rich
-            currContact: 'felix.id',
+            //contact currently chatting to -- hard coded rn
+            // change to radjei.id or avthar.id, depending desired test
+            currContact: 'radjei.id',
             //messages for current chat
             messageList: [],
             isLoading: false,
@@ -169,6 +170,7 @@ export class Home extends Component {
                 })
     }
 
+    //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
         this.setState({isLoading: true},() => {
             this.fetchMessageData(this.state.currContact);
