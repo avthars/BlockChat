@@ -10,6 +10,7 @@ import React, { Component, Link } from 'react';
 import {SideBar} from './SideBar.jsx';
 import {ChatScreen} from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
+
 import {
     isSignInPending,
     loadUserData,
@@ -29,16 +30,7 @@ const message_text = 'this is my message to the world, and it is this that I am 
 const time_sent = new Date();
 
 //dummy messages to display in table
-const MESSAGES = [
-    {id: 1, sender: username, message: message_text, time_received: time_sent.getDate()},
-    {id: 2, sender: username, message: message_text, time_received: time_sent.getDate() + 1},
-    {id: 3, sender: username, message: message_text, time_received: time_sent.getDate() + 2},
-    {id: 4, sender: username, message: message_text, time_received: time_sent.getDate() + 3},
-    {id: 5, sender: username, message: message_text, time_received: time_sent.getDate() + 4},
-    {id: 6, sender: username, message: message_text, time_received: time_sent.getDate() + 5},
-    {id: 7, sender: username, message: message_text, time_received: time_sent.getDate() + 6},
-    {id: 8, sender: username, message: message_text, time_received: time_sent.getDate() + 7}
-  ];
+const MESSAGES = []
 
 //**************************************************************
 // MessageTile component: helper component
@@ -48,7 +40,19 @@ class MessageTile extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {}; 
+        this.state = {
+            //user info  
+            currContact: '',
+          }; 
+    }
+
+    //update component when parent state changes
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            currContact: nextProps.currContact,
+        }, () => {
+            console.log(this.state);
+        });
     }
 
     render() {
@@ -58,9 +62,12 @@ class MessageTile extends React.Component {
         <table className="table table-hover">
             <tbody>
             {
-                this.props.messages.map((message) => {  
+                this.props.messageList.map((message) => {  
                     return (
-                        <tr><td className="table-row">
+                        <tr onClick={(e) => this.props.clickedMessageTile(message.sender, e)} 
+                            className ={(this.state.currContact == message.sender) ? 'success' : 'none'}>
+                        
+                        <td className="table-row">
                         <div className="sidebar-message-tile" key={message.id}> 
                             <div className="other-user-pic"> 
                                 <img src={avatarFallbackImage} className="img-rounded message-pic"/>
@@ -103,9 +110,11 @@ export class Home extends Component {
             //messages for current chat
             messageList: [],
             isLoading: false,
+            selected: '',
           }; 
         this.putDataInStorage  = this.putDataInStorage.bind(this);
         this.fetchMessageData  = this.fetchMessageData.bind(this);
+        this.clickedMessageTile = this.clickedMessageTile.bind(this);
       }
 
       //update component when parent state changes
@@ -170,6 +179,14 @@ export class Home extends Component {
                 })
     }
 
+    clickedMessageTile(data, e) {
+        // prevent the default
+        this.setState({
+            currContact: data,
+        });
+        e.preventDefault();
+    }
+
     //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
         this.setState({isLoading: true},() => {
@@ -191,7 +208,7 @@ export class Home extends Component {
                     <div className="col-12 col-lg-3 col-md-4 col-xl-2 bd-sidebar">
                         <div className="profile-sidebar">
                             <div className="profile-userpic">
-                                <img src={this.props.userPic} className="img-rounded avatar"/>
+                                <img src={this.props.userPic} onClick={(e) => this.clickedMessageTile("Felix", e)} className="img-rounded avatar"/>
                             </div>
 
                             <div className="text-center username-id">
@@ -214,7 +231,11 @@ export class Home extends Component {
                             </div>
 
                             <div className="messages-sidebar">
-                                <MessageTile messages={MESSAGES}/>
+                                <MessageTile
+                                    messageList={this.state.messageList} 
+                                    currContact = {this.state.currContact} 
+                                    clickedMessageTile = {this.clickedMessageTile.bind(this)}
+                                />
                             </div>
                         </div>
                     </div>
