@@ -125,3 +125,12 @@ body {
 {
     background-color:red !important;
 }
+
+.chat-name {
+}
+
+.search-audio-video {
+    padding-top: 10px;
+    margin-right: 0px;
+    padding-right: 0px;
+}

@@ -107,7 +107,7 @@ export class Home extends Component {
             contactList: this.props.contactList,
             //contact currently chatting to -- hard coded rn
             // change to radjei.id or avthar.id, depending desired test
-            currContact: 'felix.id',
+            currContact: 'radjei.id',
             //messages for current chat
             messageList: [],
             isLoading: false,

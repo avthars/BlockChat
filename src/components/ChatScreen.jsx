@@ -31,7 +31,7 @@ export class ChatScreen extends Component {
         };
       }
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
         this.setState({
             messageList: nextProps.messageList,
             currContact: nextProps.currContact,
@@ -77,20 +77,21 @@ export class ChatHeader extends Component {
 
       render() {
 
+        // TODO: get this as props that changes
         const contactName = "Satoshi Nakamoto";
 
-
-
         return (
-            <div>
-                <header className = "Chat-header">
-                    <h2 className= "current-chat-label">{contactName}</h2>
-                    <div>
-                        <button>Search</button>
-                        <button>Call</button>
-                        <button>Video</button>
+            <div className="row">
+                    <div className="col-lg-2 col-sm-2 col-md-2 col-*-offset-0 search-audio-video">
+                        <button><i className="fa fa-search"></i></button>
+                        <button><i className="fa fa-phone"></i></button>
+                        <button><i className="fa fa-video-camera"></i></button>
                     </div>
-                </header>
+                    <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-2"> 
+                        <h4 className= "current-chat-label">{contactName}</h4>
+                    </div >
+                    
+               
             </div>
         );
       }
