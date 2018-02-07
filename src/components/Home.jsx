@@ -10,6 +10,7 @@ import React, { Component, Link } from 'react';
 import {SideBar} from './SideBar.jsx';
 import {ChatScreen} from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
+import {ContactSearch} from './ContactSearch.jsx';
 
 import {
     isSignInPending,
@@ -106,7 +107,7 @@ export class Home extends Component {
             contactList: this.props.contactList,
             //contact currently chatting to -- hard coded rn
             // change to radjei.id or avthar.id, depending desired test
-            currContact: 'radjei.id',
+            currContact: 'felix.id',
             //messages for current chat
             messageList: [],
             isLoading: false,
@@ -198,6 +199,23 @@ export class Home extends Component {
             console.log(this.state);
         });
     }
+
+    //Function to add new message to list
+    addContact(newContact){
+        console.log('in add Contact mode');
+        
+          //add to local list of tweets
+          this.setState((prevState, props) => {
+          //concat new item onto list of old items
+         return {contactList: prevState.contactList.concat(newContact)};
+          }, 
+          () => {
+            //call parent func to put in blockstack storage
+            this.props.putContact(this.state.contactList);
+            console.log('state in ChatScreen after calling parent func');
+            console.log(this.contactList);
+          });
+        }
     
       render() {
           
@@ -222,12 +240,9 @@ export class Home extends Component {
 
                         <div className="message-and-search-box">
                             <div className="search-bar">
-                                <form>
-                                    <div className="input-group">
-                                        <div className="input-group-addon"><i className="fa fa-search"></i></div>
-                                        <input type="text" className="form-control" id="inlineFormInputGroup" placeholder="Search BlockChat"/>
-                                    </div>
-                                </form>
+                                <ContactSearch 
+                                contactList = {this.state.contactList}
+                                addContact = {this.addContact.bind(this)}/>
                             </div>
 
                             <div className="messages-sidebar">
