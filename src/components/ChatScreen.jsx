@@ -39,7 +39,6 @@ export class ChatScreen extends Component {
 
     }
 
-
     //Function to add new message to list
     addMessage(newMsg){
     console.log('in add message');

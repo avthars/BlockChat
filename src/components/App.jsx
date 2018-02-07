@@ -171,6 +171,7 @@ export default class App extends Component {
           <div className="site-wrapper-inner">
             { isUserSignedIn() ?
               <Home 
+              putContact  = {this.putDataInStorage}
               handleSignOut={ this.handleSignOut }
               userName = {this.state.userName}
               userId = {this.state.userId}
