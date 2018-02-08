@@ -8,6 +8,17 @@
 */
 import React, { Component, Link } from 'react';
 
+import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
+
+
 //**************************************************************
 //InputBox component: User enters a new message and is 
 //displayed in chat screen
@@ -41,7 +52,26 @@ export class ContactSearch extends Component {
         //create the message object
         console.log(this.state.text);
 
-        var newContact = this.state.text;
+        var name = this.state.text;
+
+        console.log(name);
+
+        lookupProfile(name, "https://core.blockstack.org/v1/names/")
+            .then((profile) => {
+                var newContact = {
+                    id: name, 
+                    contactName: profile.name, 
+                    picture: profile.image[0].contentUrl,
+                };
+                // Add it to the object.
+                this.props.addContact(newContact);
+                console.log("I got here");
+                console.log(profile.image[0].contentUrl);
+            })
+            .catch((error) => {
+                console.log('could not find contact with id: ' + name)
+            }) 
+
 
         // Add it to the object.
         this.props.addContact(newContact);

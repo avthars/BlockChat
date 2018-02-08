@@ -23,6 +23,7 @@ import {
   isLaterVersion,
   Person,
   loadUserData,
+  lookupProfile,
 } from 'blockstack';
 
 //**************************************************************
@@ -43,7 +44,7 @@ export default class App extends Component {
       userName: 'Nameless',
       userId: 'name_less',
       userBio: '',
-      contactList: ['avthars.id', 'felix.id', 'radjei.id'],
+      contactList: [],
       contactIndex: 0,
       isLoading: 'false',
     };
@@ -144,7 +145,7 @@ export default class App extends Component {
         //change state
         this.setState({
           contactList: contacts,
-          contactIndex: contactList.length,
+          contactIndex: contacts.length,
         })
       })
       .finally(() => {

@@ -63,23 +63,23 @@ class MessageTile extends React.Component {
         <table className="table table-hover">
             <tbody>
             {
-                this.props.messageList.map((message) => {  
+                this.props.contactList.map((contact) => {  
                     return (
-                        <tr onClick={(e) => this.props.clickedMessageTile(message.sender, e)} 
-                            className ={(this.state.currContact == message.sender) ? 'success' : 'none'}>
+                        <tr onClick={(e) => this.props.clickedMessageTile(contact.id, e)} 
+                            className ={(this.state.currContact == contact.id) ? 'success' : 'none'}>
                         
                         <td className="table-row">
-                        <div className="sidebar-message-tile" key={message.id}> 
+                        <div className="sidebar-message-tile" key={contact.contactName}> 
                             <div className="other-user-pic"> 
-                                <img src={avatarFallbackImage} className="img-rounded message-pic"/>
+                                <img src={contact.picture} className="img-rounded message-pic"/>
                             </div>
 
                             <div className="message-preview">
                                 <p> 
-                                    <span className="sender-name">{message.sender}</span>
-                                    <span className="message-time">{message.time_received}</span> 
+                                    <span className="sender-name">{contact.contactName}</span>
+                                    {/* <span className="message-time">{message.time_received}</span>  */}
                                 </p>
-                                    <p className="message-snippet">{message.message}</p>
+                                    {/* <p className="message-snippet">{message.message}</p> */}
                             </div>
                         </div>
                         </td></tr>
@@ -107,7 +107,7 @@ export class Home extends Component {
             contactList: this.props.contactList,
             //contact currently chatting to -- hard coded rn
             // change to radjei.id or avthar.id, depending desired test
-            currContact: 'radjei.id',
+            currContact: '',
             //messages for current chat
             messageList: [],
             isLoading: false,
@@ -173,7 +173,7 @@ export class Home extends Component {
                 .catch((error) => {
                   console.log('could not fetch messages from ' + contactId)
                   //reset state back to before load
-                  this.setState({messageList: oldMessages});
+                  this.setState({messageList: []});
                 })
                 .finally(() => {
                   this.setState({isLoading: false});
@@ -184,6 +184,9 @@ export class Home extends Component {
         // prevent the default
         this.setState({
             currContact: data,
+        });
+        this.setState({isLoading: true},() => {
+            this.fetchMessageData(this.state.currContact);
         });
         e.preventDefault();
     }
@@ -247,7 +250,7 @@ export class Home extends Component {
 
                             <div className="messages-sidebar">
                                 <MessageTile
-                                    messageList={this.state.messageList} 
+                                    contactList={this.state.contactList} 
                                     currContact = {this.state.currContact} 
                                     clickedMessageTile = {this.clickedMessageTile.bind(this)}
                                 />
