@@ -28,6 +28,7 @@ export class ChatScreen extends Component {
           this.state = {
               messageList: this.props.messageList,
               currContact: this.props.currContact,
+              userId: this.props.userId,
         };
       }
 
@@ -36,7 +37,6 @@ export class ChatScreen extends Component {
             messageList: nextProps.messageList,
             currContact: nextProps.currContact,
         });
-
     }
 
     //Function to add new message to list
@@ -59,10 +59,15 @@ export class ChatScreen extends Component {
         return (
             <div>
                 <ChatHeader/>
-                <MessageDisplay messageList = {this.state.messageList}/>
+                <MessageDisplay 
+                    messageList = {this.state.messageList}
+                    userId = {this.state.userId}
+                />
                 <InputBar 
-                addMessage = {this.addMessage.bind(this)}
-                messageList = {this.state.messageList}/>
+                    addMessage = {this.addMessage.bind(this)}
+                    messageList = {this.state.messageList}
+                    userId = {this.state.userId}
+                />
             </div>
         );
       }
@@ -90,8 +95,6 @@ export class ChatHeader extends Component {
                     <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-2"> 
                         <h4 className= "current-chat-label">{contactName}</h4>
                     </div >
-                    
-               
             </div>
         );
       }

@@ -134,3 +134,15 @@ body {
     margin-right: 0px;
     padding-right: 0px;
 }
+
+.message-from-me li {
+    margin-right: 0px;
+    width: 15px;
+    float: right;
+}
+
+.message-from-other li {
+    margin-left: 0px;
+    width: 15px;
+    float: left;
+}

@@ -40,11 +40,7 @@ export class MessageDisplay extends Component {
 
       render() {
         return (
-            <div className = 'container'>
-                <div className = "row bg-success"> 
-                    <MessageList messageList = {this.state.messageList}/>
-                </div>
-            </div>
+            <MessageList messageList = {this.state.messageList} userId={this.props.userId}/>
         );
       }
 }
@@ -64,15 +60,41 @@ class MessageList extends Component {
     }
 
     render() {
-
+        console.log(this.props.messageList);
+        console.log(this.props.userId);
         return(
             <div>
                 <ul className = "list-group">
                      {this.props.messageList.map(message => (
-                        <li className = "list-group-item text-right" key={message.id}>{message.text}</li>
+                        <MessageInstance message={message} userId = {this.props.userId} />
                     ))}
                 </ul>
             </div>
         );
+    }
+}
+
+
+class MessageInstance extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+
+    render() {
+        if (this.props.message.by == this.props.userId) {
+            console.log(this.props.message);
+            console.log(this.props.currContact);
+            return (
+                <li className = "list-group-item text-right" key={this.props.message.id}>{this.props.message.text}</li>
+            );
+        }
+        else {
+            console.log(this.props.message);
+            console.log(this.props.currContact);
+            return (
+                <li className = "list-group-item text-left" key={this.props.message.id}>{this.props.message.text}</li>
+            );
+        }
     }
 }

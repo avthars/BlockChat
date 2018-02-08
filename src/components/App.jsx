@@ -166,25 +166,27 @@ export default class App extends Component {
   }
 
   render() {
+
+    if (isUserSignedIn()) {
+      return (
+        <Home 
+          putContact  = {this.putDataInStorage}
+          handleSignOut={ this.handleSignOut }
+          userName = {this.state.userName}
+          userId = {this.state.userId}
+          userBio = {this.state.userBio}
+          userPic = {this.state.user.avatarUrl()}
+          contactList = {this.state.contactList}
+          /> 
+      );
+    } else {
       return (
         <div className="site-wrapper">
-          <div className="site-wrapper-inner">
-            { isUserSignedIn() ?
-              <Home 
-              putContact  = {this.putDataInStorage}
-              handleSignOut={ this.handleSignOut }
-              userName = {this.state.userName}
-              userId = {this.state.userId}
-              userBio = {this.state.userBio}
-              userPic = {this.state.user.avatarUrl()}
-              contactList = {this.state.contactList}
-              /> : <Signin handleSignIn={ this.handleSignIn } />
-            }
+            <div className="site-wrapper-inner">
+              <Signin handleSignIn={ this.handleSignIn } />
+            </div>
           </div>
-        </div>
       );
-       
+    }    
   }
-
- 
 }

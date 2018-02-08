@@ -255,17 +255,15 @@ export class Home extends Component {
                         </div>
                     </div>
 
-                    <div className="col-lg-9">
+                    <div className="col-lg-9 col-md-9">
                         <ChatScreen
                             putData = {this.putDataInStorage}
                             messageList = {this.state.messageList}
                             currContact = {this.state.currContact}
+                            userId = {this.state.userId}
                         />
-                        <button 
-                        className = 'btn btn-primary'
-                        onClick = {this.props.handleSignOut}
-                        > 
-                        Logout
+                        <button className = 'btn btn-primary' onClick = {this.props.handleSignOut}> 
+                            Logout
                         </button>
                     </div>
                 </div>
