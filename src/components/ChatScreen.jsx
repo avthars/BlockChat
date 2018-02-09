@@ -58,7 +58,7 @@ export class ChatScreen extends Component {
       render() {
         return (
             <div>
-                <ChatHeader/>
+                <ChatHeader currContact = {this.state.currContact}/>
                 <MessageDisplay 
                     messageList = {this.state.messageList}
                     userId = {this.state.userId}
@@ -77,13 +77,18 @@ export class ChatHeader extends Component {
     
       constructor(props) {
           super(props);
-          this.state = {};
+          this.state = {
+            currContact: this.props.currContact,
+          };
       }
 
       render() {
 
         // TODO: get this as props that changes
-        const contactName = "Satoshi Nakamoto";
+        const contactName = this.state.currContact;
+        console.log("I got the contact")
+        console.log(this.props.currContact)
+        console.log("Hello")
 
         return (
             <div className="row">
@@ -93,7 +98,7 @@ export class ChatHeader extends Component {
                         <button><i className="fa fa-video-camera"></i></button>
                     </div>
                     <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-2"> 
-                        <h4 className= "current-chat-label">{contactName}</h4>
+                        <h4 className= "current-chat-label">{this.props.currContact}</h4>
                     </div >
             </div>
         );
