@@ -265,10 +265,9 @@ export class Home extends Component {
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}
                         />
-                        <button className = 'btn btn-primary' onClick = {this.props.handleSignOut}> 
-                            Logout
-                        </button>
-                    </div>
+
+                        
+                    </div> 
                 </div>
             </div>
         );

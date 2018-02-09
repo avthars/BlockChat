@@ -40,8 +40,8 @@ export class ChatScreen extends Component {
     }
 
     //Function to add new message to list
-    addMessage(newMsg){
-    console.log('in add message');
+    addMessage(newMsg) {
+      console.log('in add message');
       //add to local list of tweets
       this.setState((prevState, props) => {
       //concat new item onto list of old items
@@ -59,15 +59,17 @@ export class ChatScreen extends Component {
         return (
             <div>
                 <ChatHeader currContact = {this.state.currContact}/>
-                <MessageDisplay 
-                    messageList = {this.state.messageList}
-                    userId = {this.state.userId}
-                />
-                <InputBar 
-                    addMessage = {this.addMessage.bind(this)}
-                    messageList = {this.state.messageList}
-                    userId = {this.state.userId}
-                />
+                <div id="message-display">
+                    <MessageDisplay 
+                        messageList = {this.state.messageList}
+                        userId = {this.state.userId}
+                    />
+                    </div>
+                    <InputBar 
+                        addMessage = {this.addMessage.bind(this)}
+                        messageList = {this.state.messageList}
+                        userId = {this.state.userId}
+                    />
             </div>
         );
       }
@@ -91,15 +93,17 @@ export class ChatHeader extends Component {
         console.log("Hello")
 
         return (
-            <div className="row">
-                    <div className="col-lg-2 col-sm-2 col-md-2 col-*-offset-0 search-audio-video">
+            <div className="row" id="chat-header">
+                <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-0" id="chat-header-name"> 
+                    <h4 className= "current-chat-label">{this.props.currContact}</h4>
+                </div >
+                <div className="col-lg-2 col-sm-2 col-md-2 col-*-offset-10">
+                    <div id="search-audio-video">
                         <button><i className="fa fa-search"></i></button>
                         <button><i className="fa fa-phone"></i></button>
                         <button><i className="fa fa-video-camera"></i></button>
                     </div>
-                    <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-2"> 
-                        <h4 className= "current-chat-label">{this.props.currContact}</h4>
-                    </div >
+                </div>
             </div>
         );
       }
