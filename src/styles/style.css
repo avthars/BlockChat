@@ -126,13 +126,13 @@ body {
     background-color:red !important;
 }
 
-.chat-name {
+#search-audio-video {
+    padding-top: 10px;
+    float: right;
 }
 
-.search-audio-video {
-    padding-top: 10px;
-    margin-right: 0px;
-    padding-right: 0px;
+#chat-header-name {
+    text-align: center;
 }
 
 .message-from-me li {
@@ -146,3 +146,74 @@ body {
     width: 15px;
     float: left;
 }
+
+.borderless li{
+    border: 0 none;
+}
+
+#message-display {
+    margin-left: -12px;
+    margin-right: -8px;
+    height:640px;
+    background-color:white;
+    overflow: scroll;
+    border-bottom: solid #DCDCDC;
+    border-top: solid #DCDCDC;
+    border-radius: 10px;
+}
+
+.sender-message-photo {
+    display: inline-block;
+    margin-left: 0px;
+}
+
+.message-photo {
+    height: 50px;
+    width: 50px;
+}
+
+.message-text {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.my-message-text {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.message-timstamp {
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.message-body {
+    border-radius: 15px 50px;
+    background: #dceedc;
+    padding: 5px;
+}
+
+.my-message-body {
+    border-radius: 50px 15px;
+    background: #dceedc;
+    padding: 5px;
+}
+
+#chat-header {
+    background-color:white;
+    font-family: Raleway;
+    margin-left: -12px;
+    margin-right: -8px;
+    margin-top: 5px;
+    border-radius: 10px;
+}
+
+#input-box {
+    margin-left: -13px;
+    width: 103% !important;
+}
+
+#input-button {
+    padding-right: -5px;
+    height: 55px;
+} 

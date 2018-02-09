@@ -62,32 +62,28 @@ export class InputBar extends Component {
         this.setState({text: ''});
       }
 
-      //<button onClick = {this.props.addTweet}>Input</button>
     render(){
         return(
-            <div className = 'container input-bar'>
-            <div className = 'row'>
-            <form
-              className = "form-inline"
-             onSubmit={this.handleSubmit}>
-             <div className = "form-group">
-                <textarea className = 'text-entry-box'
-                  placeholder = 'Write a message here'
-                  onChange={(event) => this.handleChange(event)}
-                  value={this.state.text}
-                />
-              </div>
-              <div className = "form-group">
-                <button className = 'btn btn-primary'
+          <div className="row" id = "new-message-footer">
+          <form className = "form-inline" onSubmit={this.handleSubmit}>
+            <div className = "form-group col-lg-11 col-md-11">
+              <textarea className = 'form-control' id="input-box"
+                placeholder = 'Write a message here'
+                onChange={(event) => this.handleChange(event)}
+                value={this.state.text}
+              />
+            </div>
+
+            <div className="form-group">
+            <button 
+                className = 'btn btn-default btn-lg'
+                id = "input-button"
                 onClick = {(event) => this.onSendMessage(event)}>
                 Send
               </button>
-              </div>
-            </form>
             </div>
+          </form>
           </div>
         );
-
     }
-
 }
