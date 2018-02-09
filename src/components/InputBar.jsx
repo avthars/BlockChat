@@ -29,11 +29,23 @@ export class InputBar extends Component {
         this.setState({text: event.target.value});
       }
 
+      handleKeyPress(event){
+        // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+        if ((event.which == 13)  && !event.shiftKey) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onSendMessage(event);
+        }
+        console.log("here now 1");
+      }
+
       
       //When user submits tweet
       onSendMessage(event){
         event.preventDefault();
         
+        console.log("here now");
+
         if (!this.state.text.length) {
           return;
         }
@@ -70,6 +82,7 @@ export class InputBar extends Component {
               <textarea className = 'form-control' id="input-box"
                 placeholder = 'Write a message here'
                 onChange={(event) => this.handleChange(event)}
+                onKeyPress={(event) => this.handleKeyPress(event)}
                 value={this.state.text}
               />
             </div>

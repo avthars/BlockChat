@@ -266,8 +266,6 @@ export class Home extends Component {
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}
                         />
-
-                        
                     </div> 
                 </div>
             </div>
