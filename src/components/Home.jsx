@@ -28,7 +28,7 @@ const sendername = 'Sender Name';
 //const blockStackId = 'f.id';
 //const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
 const message_text = 'this is my message to the world, and it is this that I am writing because I feel like it and I';
-const time_sent = new Date();
+const time_sent = new Date(Date.UTC(2013, 1, 1, 14, 0, 0));;
 
 //dummy messages to display in table
 const MESSAGES = []
@@ -77,9 +77,10 @@ class MessageTile extends React.Component {
                             <div className="message-preview">
                                 <p> 
                                     <span className="sender-name">{contact.contactName}</span>
-                                    {/* <span className="message-time">{message.time_received}</span>  */}
+                                    <span className="message-time">
+                                    {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
                                 </p>
-                                    {/* <p className="message-snippet">{message.message}</p> */}
+                                 <p className="message-snippet">{message_text}</p>
                             </div>
                         </div>
                         </td></tr>

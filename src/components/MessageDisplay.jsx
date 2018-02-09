@@ -61,6 +61,19 @@ class MessageList extends Component {
     constructor(props) {
         super(props);
         this.state = {};
+        this.scrollToBottom = this.scrollToBottom.bind(this);
+    }
+
+    scrollToBottom(){
+        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+
+    componentDidMount() {
+        this.scrollToBottom();
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
     }
 
     render() {
@@ -69,13 +82,17 @@ class MessageList extends Component {
         return(
             <div>
                 <div>
-                <ul className = "list-group" ref="messagesContainer">
-                <div className="borderless">
-                     {this.props.messageList.map(message => (
-                        <MessageInstance message={message} userId = {this.props.userId} />
-                    ))}
-                    </div>
-                </ul>
+                    <ul className = "list-group">
+                        <div className="borderless">
+                            {this.props.messageList.map(message => (
+                                <MessageInstance message={message} userId = {this.props.userId} />
+                            ))}
+                        </div>
+                    </ul>
+                </div>
+
+                <div style={{ float:"left", clear: "both" }}
+                    ref={(el) => { this.messagesEnd = el; }}>
                 </div>
             </div>
         );

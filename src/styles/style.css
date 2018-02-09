@@ -34,6 +34,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
+    font-family: Raleway;
 }
 .user-status {
     display: block;
@@ -105,20 +106,22 @@ body {
 }
 
 .sender-name {
-    font-weight: bold; 
     font-style: italic;
+    font-family: Raleway;
+    padding-left: 5px;
 }
 
 .message-time {
-    float:right
+    float:right;
+    font-family: Raleway;
 }
 
 .message-snippet {
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
-    position: absolute; 
-    
+    position: absolute;
+    padding-left: 5px;
 }
 
 .success tr
