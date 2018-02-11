@@ -7,7 +7,8 @@
     \brief Has the reducers that are being used in the application
 */
 
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
+
 import {
     ADD_CONTACT,
     ADD_MESSAGE,
@@ -17,22 +18,21 @@ import {
     SET_CURRENT_CONTACT
 } from '../constants/ActionTypes';
 
-
 //! define an initial state
 // TODO: change the contactList to either hashmaps or associative arrays
 const initialState = {
     currentContact: '',     //!< The ID of the contact that has been selected
     contactList: [],        //!< The list of all the users' contacts
-    messageList: []         //!< List of the last couple of messages that were sent
+    messageList: [],         //!< List of the last couple of messages that were sent
                             //!< between the currentContact and this user
     isSignedIn: false,
     isLoading: false,
     userProfile: {},        //!< Has userName, userBio and all the other profile information
-    fullUserData: {},       //!< Has full data and other stuff like userID etc.
-}
+    fullUserData: {}       //!< Has full data and other stuff like userID etc.
+};
 
 //! Reducer to login the user and store the initial data for the app
-function logInUser(state = initialState, action = {}) {
+function logInUserReducer(state = initialState, action = {}) {
     switch (action.type) {
     case LOGIN:
         return Object.assign({}, state, {
@@ -42,10 +42,11 @@ function logInUser(state = initialState, action = {}) {
         });
     default:
        return state;
+    }
 }
 
 //! Reducer to update contacts
-function addContacts(state = initialState, action = {}) {
+function addContactsReducer(state = initialState, action = {}) {
     switch (action.type) {
     case ADD_CONTACT:
         return Object.assign({}, state, {
@@ -53,10 +54,11 @@ function addContacts(state = initialState, action = {}) {
         });
     default:
        return state;
+    }
 }
 
 //! Reducer to update contacts
-function updateLoadingStatus(state = initialState, action = {}) {
+function updateLoadingStatusReducer(state = initialState, action = {}) {
     switch (action.type) {
     case LOADING_STATUS:
         return Object.assign({}, state, {
@@ -64,6 +66,7 @@ function updateLoadingStatus(state = initialState, action = {}) {
         });
     default:
        return state;
+    }
 }
 
 //! Reducer to handle actions on messages
@@ -76,6 +79,7 @@ function messageReducer(state = initialState, action = {}) {
         });
     default:
        return state;
+    }
 }
 
 //! Reducer to handle actions on the current contact
@@ -87,16 +91,17 @@ function currentContactReducer(state = initialState, action = {}) {
         });
     default:
        return state;
+    }
 }
 
 //! the root reducer: the functions should be ordered in the order
 //! in which they appear above
 const rootReducer = combineReducers({
-    logInUser,
-    addContacts,
-    updateLoadingStatus,
+    logInUserReducer,
+    addContactsReducer,
+    updateLoadingStatusReducer,
     messageReducer,
-    currentContactReducer
+    currentContactReducer,
 });
 
 export default rootReducer;

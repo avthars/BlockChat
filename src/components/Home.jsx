@@ -220,7 +220,13 @@ export class Home extends Component {
             console.log(this.contactList);
           });
         }
-    
+
+  // Event handler for signing out
+  handleSignOut(e) {
+    e.preventDefault();
+    signUserOut(window.location.origin);
+  }
+
       render() {
           
         return (

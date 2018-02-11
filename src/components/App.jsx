@@ -11,7 +11,6 @@
 import React, { Component, Link } from 'react';
 import { connect } from 'react-redux';
 import Signin from './Signin.jsx';
-import {Home} from './Home.jsx';
 import * as blockstack from 'blockstack';
 
 import {
@@ -29,13 +28,25 @@ import {
 } from 'blockstack';
 
 import {
-  logInUser,
   addContacts,
-  updateLoadingStatus,
-  addMessage,
-  sendMessage,
-  setCurrentContact
+  logInUser,
+  updateLoadingStatus 
 } from '../actions/Actions'
+
+//! Link the depatcher for actions we want
+function mapDispatchToProps(dispatch) {
+  return {
+      logInUser: (usrProfile, userData) => dispatch(logInUser(usrProfile, userData)),
+      updateLoadingStatus: (status) => dispatch(updateLoadingStatus(status)),
+      addContacts: (contacts) => dispatch(addContacts(contacts)),
+  };
+}
+
+function mapStateToProps(state) {
+    return {
+        isSignedIn: state.isSignedIn,
+    };
+  }
 
 //**************************************************************
 // App component: handles main app state and interacts with
@@ -43,22 +54,8 @@ import {
 //**************************************************************
 class App extends Component {
 
-  constructor(props) {
-    super(props);
-    /*this.state = {
-      isSignedIn: false,
-      //user profile Object
-      user: null,
-      //Blockstack user data object
-      bsUserData: null,
-      //list of blockstack IDs for contacts
-      userName: 'Nameless',
-      userId: 'name_less',
-      userBio: '',
-      contactList: [],
-      contactIndex: 0,
-      isLoading: 'false',
-    };*/
+  constructor() {
+    super();
 
     //bind this to refer to App component for callback
     this.putDataInStorage  = this.putDataInStorage.bind(this);
@@ -117,32 +114,20 @@ class App extends Component {
   //check for login on start, then set state to reflect info from profile
   componentWillMount(){
     let userIsSignedIn = this.checkSignedInStatus();
-    //if user is signed in
+    console.log("felix");
+    
+    //if user is signed in, get data and call the reduce to save the data
     if(userIsSignedIn){
       let person = this.loadPerson();
-      console.log(person);
-
-      console.log("User data object");
-      console.log(loadedData);
-      console.log(loadedData.username);
-
-      // TODO: call the reducer to save the user data
-      
-      /*this.setState({
-          isSignedIn: true,
-          user: person,
-          bsUserData: loadedData,
-          userName: person.name(),
-          userId: loadedData.username,
-          userBio: person.description(),
-        });*/
+      let loadedData = this.loadUserData();
+      this.props.logInUser(person, loadedData);
     }
   }
 
   //fetch data from user profile and set it as app state
   componentDidMount(){  
-    if(this.state.isSignedIn){
-      console.log("In didMount");
+    if(this.props.isSignedIn){
+
       //enable encryption in v2
       //var options = {decrypt: false, user: this.state.userId, app: 'http://localhost:8080'};
       var FILE_NAME = 'contacts.json';
@@ -153,28 +138,13 @@ class App extends Component {
   //fetch contact data
   fetchContacts(FILE_NAME) {
 
-    // TODO: change this to a reducer
-    /*this.setState({ isLoading: true })*/
+    this.props.updateLoadingStatus(true);
 
-    getFile(FILE_NAME)
-      .then((file) => {
+    getFile(FILE_NAME).then((file) => {
         var contacts = JSON.parse(file || '[]')
-        console.log('users contact');
-        console.log(contacts);
-
-        //change state
-        // TODO: call the reducer to update the number of contacts
-        /*this.setState({
-          contactList: contacts,
-          contactIndex: contacts.length,
-        })*/
-
-      })
-      .finally(() => {
-
-        // TODO: what does this field do?
-        /*this.setState({ isLoading: false }) */
-
+        this.props.addContacts(contacts);
+      }).finally(() => {
+        this.props.updateLoadingStatus(false);
       })
   }
 
@@ -185,26 +155,15 @@ class App extends Component {
     const origin = window.location.origin
     redirectToSignIn(origin, origin + '/manifest.json', ['store_write', 'publish_data'])
   }
-  // Event handler for signing out
-  handleSignOut(e) {
-    e.preventDefault();
-    signUserOut(window.location.origin);
-  }
 
   render() {
 
     if (isUserSignedIn()) {
       return (
-        <Home 
-          putContact  = {this.putDataInStorage}
-          handleSignOut={ this.handleSignOut }
-          userName = {this.state.userName}
-          userId = {this.state.userId}
-          userBio = {this.state.userBio}
-          userPic = {this.state.user.avatarUrl()}
-          contactList = {this.state.contactList}
-          /> 
+        <div> <h1> Felix </h1>
+          </div>
       );
+
     } else {
       return (
         <div className="site-wrapper">
