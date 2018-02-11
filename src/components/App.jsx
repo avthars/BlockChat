@@ -9,9 +9,11 @@
 */
 
 import React, { Component, Link } from 'react';
+import { connect } from 'react-redux';
 import Signin from './Signin.jsx';
 import {Home} from './Home.jsx';
 import * as blockstack from 'blockstack';
+
 import {
   isSignInPending,
   isUserSignedIn,
@@ -26,15 +28,24 @@ import {
   lookupProfile,
 } from 'blockstack';
 
+import {
+  logInUser,
+  addContacts,
+  updateLoadingStatus,
+  addMessage,
+  sendMessage,
+  setCurrentContact
+} from '../actions/Actions'
+
 //**************************************************************
 // App component: handles main app state and interacts with
 // blockstack storage
 //**************************************************************
-export default class App extends Component {
+class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
+    /*this.state = {
       isSignedIn: false,
       //user profile Object
       user: null,
@@ -47,7 +58,7 @@ export default class App extends Component {
       contactList: [],
       contactIndex: 0,
       isLoading: 'false',
-    };
+    };*/
 
     //bind this to refer to App component for callback
     this.putDataInStorage  = this.putDataInStorage.bind(this);
@@ -74,9 +85,12 @@ export default class App extends Component {
     console.log(data);
     //determine what kind of data to store and in which file
     var STORAGE_FILE_PATH = 'contacts.json';
+
+    // TODO: change this and hava callbacks for the updated list
     this.setState({contactList: data}, () => { 
         console.log('updating state in putDataInStorage');
         console.log(this.state.contactList);});
+    
     //update: set options for MR file storage
     var options = {encrypt: false,};
     let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
@@ -107,19 +121,21 @@ export default class App extends Component {
     if(userIsSignedIn){
       let person = this.loadPerson();
       console.log(person);
-      let loadedData = this.loadUserData();
+
       console.log("User data object");
       console.log(loadedData);
       console.log(loadedData.username);
 
-      this.setState({
+      // TODO: call the reducer to save the user data
+      
+      /*this.setState({
           isSignedIn: true,
           user: person,
           bsUserData: loadedData,
           userName: person.name(),
           userId: loadedData.username,
           userBio: person.description(),
-        });
+        });*/
     }
   }
 
@@ -136,20 +152,29 @@ export default class App extends Component {
 
   //fetch contact data
   fetchContacts(FILE_NAME) {
-    this.setState({ isLoading: true })
+
+    // TODO: change this to a reducer
+    /*this.setState({ isLoading: true })*/
+
     getFile(FILE_NAME)
       .then((file) => {
         var contacts = JSON.parse(file || '[]')
         console.log('users contact');
         console.log(contacts);
+
         //change state
-        this.setState({
+        // TODO: call the reducer to update the number of contacts
+        /*this.setState({
           contactList: contacts,
           contactIndex: contacts.length,
-        })
+        })*/
+
       })
       .finally(() => {
-        this.setState({ isLoading: false })
+
+        // TODO: what does this field do?
+        /*this.setState({ isLoading: false }) */
+
       })
   }
 
@@ -191,3 +216,6 @@ export default class App extends Component {
     }    
   }
 }
+
+// export the class
+export default connect(mapStateToProps, mapDispatchToProps,)(App);
