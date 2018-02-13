@@ -13,6 +13,7 @@ import {SideBar} from './SideBar.jsx';
 import {ChatScreen} from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
 import ContactSearch from './ContactSearch.jsx';
+import MessageTile from './MessageTile.jsx';
 
 import {
     isSignInPending,
@@ -106,15 +107,6 @@ class Home extends Component {
         })
     }
 
-    clickedMessageTile(data, e) {
-        // TODO: make this a waiting process
-        this.props.setCurrentContact(data);
-        this.props.updateLoadingStatus(false,() => {
-            this.fetchMessageData(this.props.currentContact);
-        });
-        e.preventDefault();
-    }
-
     //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
         this.props.updateLoadingStatus(false, () => {
@@ -132,13 +124,21 @@ class Home extends Component {
         });
     }
 
+    clickedMessageTile(data, e) {
+        this.props.setCurrentContact(data);
+        this.props.updateLoadingStatus(false,() => {
+            this.fetchMessageData(this.props.currentContact);
+        });
+        e.preventDefault();
+    }
+
     // Event handler for signing out
     handleSignOut(e) {
         e.preventDefault();
         signUserOut(window.location.origin);
     }
 
-      render() {
+    render() {
           
         console.log(this.props.userBio)
 
@@ -163,13 +163,14 @@ class Home extends Component {
 
                         <div className="message-and-search-box">
                             <div className="search-bar">
-                            <ContactSearch/>
+                                <ContactSearch/>
                             </div>
 
                             <div className="messages-sidebar">
-
-                                
+                                <MessageTile clickedMessageTile = {this.clickedMessageTile.bind(this)}/>
                             </div>
+                        </div>
+
                         </div>
                     </div>
 
@@ -178,7 +179,6 @@ class Home extends Component {
 
                     </div> 
                 </div>
-            </div>
         );
       }
 }

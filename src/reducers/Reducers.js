@@ -64,7 +64,7 @@ function addContactsReducer(state = initialState, action = {}) {
     switch (action.type) {
     case ADD_CONTACT:
         return Object.assign({}, state, {
-            contactList: state.contactList.concat([action.payload])
+            contactList: state.contactList.concat(action.payload)
         });
     default:
        return state;
