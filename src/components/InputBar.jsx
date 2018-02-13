@@ -7,18 +7,38 @@
     \brief Bar to author and send messages.
 */
 import React, { Component, Link } from 'react';
+import { connect } from 'react-redux';
+
+import {
+  setInputBarText
+} from '../actions/Actions';
+
+// Get the props from state
+function mapInputBarStateToProps(state) {
+  //console.log("State Changed");
+  //console.log(state.allReducers);
+  return {
+      inputBarText: state.allReducers.inputBarText,
+      messageList: state.allReducers.messageList,
+      fullUserData: state.allReducers.fullUserData
+  };
+}
+
+//! Link the depatcher for actions we want
+function mapInputBarDispatchToProps(dispatch) {
+  return {
+      setInputBarText: (text) => dispatch(setInputBarText(text))
+  };
+}
 
 //**************************************************************
 //InputBox component: User enters a new message and is 
 //displayed in chat screen
 //**************************************************************
-export class InputBar extends Component {
+class InputBar extends Component {
     
-      constructor(props) {
-          super(props);
-          this.state = {
-              text: '',
-          };
+      constructor() {
+          super();
       }
 
       handleChange(event) {
@@ -26,7 +46,8 @@ export class InputBar extends Component {
         // 'text' state field
         //event.target = input field
         //value = current value of it
-        this.setState({text: event.target.value});
+        console.log('called here')
+        this.props.setInputBarText(event.target.value);
       }
 
       handleKeyPress(event){
@@ -36,42 +57,37 @@ export class InputBar extends Component {
           event.stopPropagation();
           this.onSendMessage(event);
         }
-        console.log("here now 1");
+
+        console.log('here')
       }
 
       
       //When user submits tweet
       onSendMessage(event){
         event.preventDefault();
-        
-        console.log("here now");
 
-        if (!this.state.text.length) {
+        if (!this.props.inputBarText.length) {
           return;
         }
-        
-        //create the message object
-        console.log(this.state.text);
 
-        //create new message
         var idnum = this.props.messageList.length;
         // id, text, creator, date
         //Note: redux would be useful here to get the current chat partner's userId as well
         var newMessage = {
           id: idnum, 
-          text: this.state.text, 
-          by: this.props.userId, 
+          text: this.props.inputBarText, 
+          by: this.props.fullUserData.username, 
           date: Date.now(),
           read: false,
           delivered: false,
           deleted: true,
         };
 
+        console.log(idnum)
+
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
-
-        //set text in box back to empty after message saved
-        this.setState({text: ''});
+        this.props.setInputBarText('');
       }
 
     render(){
@@ -83,7 +99,7 @@ export class InputBar extends Component {
                 placeholder = 'Write a message here'
                 onChange={(event) => this.handleChange(event)}
                 onKeyPress={(event) => this.handleKeyPress(event)}
-                value={this.state.text}
+                value={this.props.inputBarText}
               />
             </div>
 
@@ -100,3 +116,6 @@ export class InputBar extends Component {
         );
     }
 }
+
+// export the class
+export default connect(mapInputBarStateToProps, mapInputBarDispatchToProps)(InputBar);

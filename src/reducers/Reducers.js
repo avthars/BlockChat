@@ -17,6 +17,7 @@ import {
     SEND_MESSAGE,
     SET_CURRENT_CONTACT,
     SET_MESSAGE,
+    SET_INPUT_BAR_TEXT,
     SET_SEARCH_BAR_TEXT
 } from '../constants/ActionTypes';
 
@@ -37,12 +38,14 @@ const initialState = {
 
 
     // Data for the search Bar
-    searchBarText: ''
+    searchBarText: '',
+
+    inputBarText: ''
 };
 
 //! Reducer to login the user and store the initial data for the app
 function logInUserReducer(state = initialState, action = {}) {
-    console.log("logInUserReducer Called");
+    //console.log("logInUserReducer Called");
     switch (action.type) {
     case LOGIN:
         return Object.assign({}, state, {
@@ -60,7 +63,7 @@ function logInUserReducer(state = initialState, action = {}) {
 
 //! Reducer to update contacts
 function addContactsReducer(state = initialState, action = {}) {
-    console.log("addContactsReducer Called");
+    //console.log("addContactsReducer Called");
     switch (action.type) {
     case ADD_CONTACT:
         return Object.assign({}, state, {
@@ -73,7 +76,7 @@ function addContactsReducer(state = initialState, action = {}) {
 
 //! Reducer to update contacts
 function updateLoadingStatusReducer(state = initialState, action = {}) {
-    console.log("updateLoadingStatusReducer Called");
+    //console.log("updateLoadingStatusReducer Called");
     switch (action.type) {
     case LOADING_STATUS:
         return Object.assign({}, state, {
@@ -91,7 +94,7 @@ function messageReducer(state = initialState, action = {}) {
     switch (action.type) {
     case ADD_MESSAGE:
         return Object.assign({}, state, {
-            messageList: state.messageList.concat([action.payload])
+            messageList: state.messageList.concat(action.payload)
         });
     case SET_MESSAGE:
         return Object.assign({}, state, {
@@ -104,7 +107,7 @@ function messageReducer(state = initialState, action = {}) {
 
 //! Reducer to handle actions on the current contact
 function currentContactReducer(state = initialState, action = {}) {
-    console.log("currentContactReducer Called");
+    //console.log("currentContactReducer Called");
     switch (action.type) {
     case SET_CURRENT_CONTACT:
         return Object.assign({}, state, {
@@ -116,13 +119,26 @@ function currentContactReducer(state = initialState, action = {}) {
 }
 
 
-//! Reducer to handle actions on the current contact
+
 function setSearchBarTextReducer(state = initialState, action = {}) {
-    console.log("setSearchBarTextReducer");
+    //console.log("setSearchBarTextReducer");
     switch (action.type) {
     case SET_SEARCH_BAR_TEXT:
         return Object.assign({}, state, {
             searchBarText: action.payload
+        });
+    default:
+       return state;
+    }
+}
+
+
+function setInputBarTextReducer(state = initialState, action = {}) {
+    console.log("setInputBarTextReducer");
+    switch (action.type) {
+    case SET_INPUT_BAR_TEXT:
+        return Object.assign({}, state, {
+            inputBarText: action.payload
         });
     default:
        return state;
@@ -149,6 +165,9 @@ function allReducers(state = initialState, action = {}) {
 
         case SET_CURRENT_CONTACT:
             return currentContactReducer(state, action);
+        
+        case SET_INPUT_BAR_TEXT:
+            return setInputBarTextReducer(state, action);
 
         case SET_SEARCH_BAR_TEXT:
             return setSearchBarTextReducer(state, action);

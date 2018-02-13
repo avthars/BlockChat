@@ -18,6 +18,7 @@ import {
     SEND_MESSAGE,
     SET_CURRENT_CONTACT,
     SET_MESSAGE,
+    SET_INPUT_BAR_TEXT,
     SET_SEARCH_BAR_TEXT
 } from '../constants/ActionTypes';
 
@@ -87,6 +88,15 @@ export const setCurrentContact = userID => {
 export const setSearchBarText = text => {
     return {
         type: SET_SEARCH_BAR_TEXT,
+        payload: text
+    }
+}
+
+//! Creates an action to send a message
+export const setInputBarText = text => {
+    console.log('actionc called')
+    return {
+        type: SET_INPUT_BAR_TEXT,
         payload: text
     }
 }

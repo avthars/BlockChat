@@ -10,7 +10,7 @@ import React, { Component, Link } from 'react';
 import { connect } from 'react-redux';
 
 import {SideBar} from './SideBar.jsx';
-import {ChatScreen} from './ChatScreen.jsx';
+import ChatScreen from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
 import ContactSearch from './ContactSearch.jsx';
 import MessageTile from './MessageTile.jsx';
@@ -87,6 +87,7 @@ class Home extends Component {
             console.log("SUCCESS: PUT FILE IN USER STORAGE");
         }
 
+        console.log('Call Add message');
         this.props.addMessage(data);
     }
 
@@ -94,7 +95,7 @@ class Home extends Component {
     fetchMessageData(contactId){
         this.props.updateLoadingStatus(true);
         const options = { username: contactId  };
-        const FILE_NAME = this.props.fullUserData.username('.id','') + '.json';
+        const FILE_NAME = this.props.fullUserData.username.replace('.id','') + '.json';
         var oldMessages = this.props.messageList;
 
         getFile(FILE_NAME, options).then((file) => {
@@ -110,8 +111,9 @@ class Home extends Component {
     //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
         this.props.updateLoadingStatus(false, () => {
-            this.fetchMessageData(this.props.currentContact);
+            //this.fetchMessageData(this.props.currentContact);
         });
+        //this.fetchMessageData(this.props.currentContact);
         this.props.updateLoadingStatus(false, () => {
         });
     }
@@ -126,9 +128,15 @@ class Home extends Component {
 
     clickedMessageTile(data, e) {
         this.props.setCurrentContact(data);
-        this.props.updateLoadingStatus(false,() => {
-            this.fetchMessageData(this.props.currentContact);
+        console.log('Here 0')
+        this.props.updateLoadingStatus(false, () => {
+            console.log('Here')
+            //this.fetchMessageData(this.props.currentContact);
         });
+
+        console.log("Here 3")
+        console.log(this.props.currentContact)
+        this.fetchMessageData(this.props.currentContact);
         e.preventDefault();
     }
 
@@ -139,9 +147,6 @@ class Home extends Component {
     }
 
     render() {
-          
-        console.log(this.props.userBio)
-
         return (
             <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
@@ -153,32 +158,30 @@ class Home extends Component {
                             </div>
 
                             <div className="text-center username-id">
-                                <p className="font-weight-bold">{ this.props.fullUserData.userName + ' | ' + this.props.fullUserData.username } </p>
+                                <p className="font-weight-bold">{this.props.fullUserData.userName + ' | ' + this.props.fullUserData.username} </p>
                             </div>
 
                             <div className="text-center user-status">
-                                <p>{this.props.userBio}</p>
+                                <p>{this.props.userBio} </p>
                             </div>
                         </div>
 
                         <div className="message-and-search-box">
                             <div className="search-bar">
-                                <ContactSearch/>
+                                <ContactSearch />
                             </div>
 
                             <div className="messages-sidebar">
                                 <MessageTile clickedMessageTile = {this.clickedMessageTile.bind(this)}/>
                             </div>
                         </div>
-
-                        </div>
                     </div>
 
                     <div className="col-lg-9 col-md-9">
-
-
+                        <ChatScreen putData = {this.putDataInStorage}/>
                     </div> 
                 </div>
+            </div>
         );
       }
 }
