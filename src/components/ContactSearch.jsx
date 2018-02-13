@@ -7,6 +7,7 @@
     \brief Bar to author and send messages.
 */
 import React, { Component, Link } from 'react';
+import { connect } from 'react-redux';
 
 import {
     isSignInPending,
@@ -18,66 +19,68 @@ import {
   } from 'blockstack';
 import * as blockstack from 'blockstack';
 
+import {
+    addContacts,
+    setSearchBarText
+  } from '../actions/Actions'
+
+// Get the props from state
+function mapContactSearchStateToProps(state) {
+    return {
+        searchBarText: state.allReducers.searchBarText
+    };
+}
+
+//! Link the depatcher for actions we want
+function mapContactSearchDispatchToProps(dispatch) {
+    return {
+        addContacts: (contacts) => dispatch(addContacts(contacts)),
+        setSearchBarText: (searchBarText) => dispatch(setSearchBarText(searchBarText))
+    };
+}
 
 //**************************************************************
 //InputBox component: User enters a new message and is 
 //displayed in chat screen
 //**************************************************************
-export class ContactSearch extends Component {
+class ContactSearch extends Component {
     
-      constructor(props) {
-          super(props);
-          this.state = {
-              text: '',
-          };
+      constructor() {
+          super();
+        
+          this.handleChange = this.handleChange.bind(this);
+          this.onSendMessage = this.onSendMessage.bind(this);
       }
 
       handleChange(event) {
-        //gets value entered into target and set it to
-        // 'text' state field
-        //event.target = input field
-        //value = current value of it
-        this.setState({text: event.target.value});
+        this.props.setSearchBarText(event.target.value);
       }
 
       
       //When user submits tweet
-      onSendMessage(event){
+      onSendMessage(event) {
         event.preventDefault();
         
-        if (!this.state.text.length) {
+        if (!this.props.searchBarText.length) {
           return;
         }
         
-        //create the message object
-        console.log(this.state.text);
-
-        var name = this.state.text;
-
-        console.log(name);
-
-        lookupProfile(name, "https://core.blockstack.org/v1/names/")
-            .then((profile) => {
+        var name = this.props.searchBarText;
+        lookupProfile(name, "https://core.blockstack.org/v1/names/").then((profile) => {
                 var newContact = {
                     id: name, 
                     contactName: profile.name, 
                     picture: profile.image[0].contentUrl,
                 };
                 // Add it to the object.
-                this.props.addContact(newContact);
-                console.log("I got here");
-                console.log(profile.image[0].contentUrl);
-            })
-            .catch((error) => {
+                this.props.addContacts(newContact);
+            }).catch((error) => {
                 console.log('could not find contact with id: ' + name)
             }) 
 
-
-        // Add it to the object.
-        this.props.addContact(newContact);
-
-        //set text in box back to empty after message saved
-        this.setState({text: ''});
+        // Add it to the object, and set the search bar text to null
+        this.props.addContacts(newContact);
+        this.this.props.setSearchBarText('');
       }
 
     render(){
@@ -89,11 +92,12 @@ export class ContactSearch extends Component {
                         id="inlineFormInputGroup"
                         placeholder="Search BlockChat"
                         onChange={(event) => this.handleChange(event)}
-                        value={this.state.text}/>
+                        value={this.props.searchBarText}/>
                 </div>
             </form>
         );
-
     }
-
 }
+
+// export the class
+export default connect(mapContactSearchStateToProps, mapContactSearchDispatchToProps)(ContactSearch);

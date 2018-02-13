@@ -16,16 +16,21 @@ import {
     LOADING_STATUS,
     LOGIN,
     SEND_MESSAGE,
-    SET_CURRENT_CONTACT
+    SET_CURRENT_CONTACT,
+    SET_MESSAGE,
+    SET_SEARCH_BAR_TEXT
 } from '../constants/ActionTypes';
 
 //! Creates an action to save the date of the user after being logged in
-export const logInUser = (usrProfile = {}, userData = {}) => {
+export const logInUser = (usrProfile = {}, userData = {}, usrName='', usrPic, usrBio) => {
     return {
         type: LOGIN,
         payload: {
             userProfile: usrProfile,
-            fullUserData: userData
+            fullUserData: userData,
+            userName: usrName,
+            userPic: usrPic,
+            userBio: usrBio
         }
     }
 }
@@ -43,6 +48,14 @@ export const updateLoadingStatus = status => {
     return {
         type: LOADING_STATUS,
         payload: status
+    }
+}
+
+//! Creates an action to add a message
+export const setMessageArray = text => {
+    return {
+        type: SET_MESSAGE,
+        payload: text
     }
 }
 
@@ -67,5 +80,13 @@ export const setCurrentContact = userID => {
     return {
         type: SET_CURRENT_CONTACT,
         payload: userID
+    }
+}
+
+//! Creates an action to send a message
+export const setSearchBarText = text => {
+    return {
+        type: SET_SEARCH_BAR_TEXT,
+        payload: text
     }
 }

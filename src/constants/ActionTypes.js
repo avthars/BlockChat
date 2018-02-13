@@ -18,3 +18,5 @@ export const LOGOUT = 'LOGOUT';
 export const REGISTER = 'REGISTER';
 export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const SET_CURRENT_CONTACT = 'SET_CURRENT_CONTACT';
+export const SET_MESSAGE = 'SET_MESSAGE';
+export const SET_SEARCH_BAR_TEXT = 'SET_SEARCH_BAR_TEXT';

@@ -11,6 +11,7 @@
 import React, { Component, Link } from 'react';
 import { connect } from 'react-redux';
 import Signin from './Signin.jsx';
+import Home from './Home.jsx';
 import * as blockstack from 'blockstack';
 
 import {
@@ -34,17 +35,18 @@ import {
 } from '../actions/Actions'
 
 //! Link the depatcher for actions we want
-function mapDispatchToProps(dispatch) {
+function mapAppDispatchToProps(dispatch) {
   return {
-      logInUser: (usrProfile, userData) => dispatch(logInUser(usrProfile, userData)),
+      logInUser: (usrProfile, userData, usrName, userPic, userBio) => dispatch(logInUser(usrProfile, userData, usrName, userPic, userBio)),
       updateLoadingStatus: (status) => dispatch(updateLoadingStatus(status)),
       addContacts: (contacts) => dispatch(addContacts(contacts)),
   };
 }
 
-function mapStateToProps(state) {
+function mapAppStateToProps(state) {
     return {
-        isSignedIn: state.isSignedIn,
+        isSignedIn: state.allReducers.isSignedIn,
+        contactList: state.allReducers.contactList
     };
   }
 
@@ -84,10 +86,8 @@ class App extends Component {
     var STORAGE_FILE_PATH = 'contacts.json';
 
     // TODO: change this and hava callbacks for the updated list
-    this.setState({contactList: data}, () => { 
-        console.log('updating state in putDataInStorage');
-        console.log(this.state.contactList);});
-    
+    this.props.addContacts(data);
+
     //update: set options for MR file storage
     var options = {encrypt: false,};
     let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
@@ -96,13 +96,12 @@ class App extends Component {
     }
     else {
       console.log("SUCCESS: PUT FILE IN USER STORAGE");
-  }
+    }
   }
 
   //load user profile
   loadPerson() {
     let profile = blockstack.loadUserData().profile
-
     return new blockstack.Person(profile)
   }
 
@@ -114,19 +113,22 @@ class App extends Component {
   //check for login on start, then set state to reflect info from profile
   componentWillMount(){
     let userIsSignedIn = this.checkSignedInStatus();
-    console.log("felix");
     
     //if user is signed in, get data and call the reduce to save the data
     if(userIsSignedIn){
       let person = this.loadPerson();
       let loadedData = this.loadUserData();
-      this.props.logInUser(person, loadedData);
+      this.props.logInUser(person,
+                           loadedData,
+                           person.name(),
+                           person.avatarUrl(),
+                           person.description())
     }
   }
 
   //fetch data from user profile and set it as app state
   componentDidMount(){  
-    if(this.props.isSignedIn){
+    if(isUserSignedIn()){
 
       //enable encryption in v2
       //var options = {decrypt: false, user: this.state.userId, app: 'http://localhost:8080'};
@@ -143,7 +145,7 @@ class App extends Component {
     getFile(FILE_NAME).then((file) => {
         var contacts = JSON.parse(file || '[]')
         this.props.addContacts(contacts);
-      }).finally(() => {
+      }).then(() => {
         this.props.updateLoadingStatus(false);
       })
   }
@@ -160,8 +162,7 @@ class App extends Component {
 
     if (isUserSignedIn()) {
       return (
-        <div> <h1> Felix </h1>
-          </div>
+        <Home/>
       );
 
     } else {
@@ -177,4 +178,4 @@ class App extends Component {
 }
 
 // export the class
-export default connect(mapStateToProps, mapDispatchToProps,)(App);
+export default connect(mapAppStateToProps, mapAppDispatchToProps)(App);

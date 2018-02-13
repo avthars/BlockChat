@@ -7,10 +7,12 @@
     \brief HomePage component which houses SideBar and ChatScreen components
 */
 import React, { Component, Link } from 'react';
+import { connect } from 'react-redux';
+
 import {SideBar} from './SideBar.jsx';
 import {ChatScreen} from './ChatScreen.jsx';
 import {Profile} from './Profile.jsx';
-import {ContactSearch} from './ContactSearch.jsx';
+import ContactSearch from './ContactSearch.jsx';
 
 import {
     isSignInPending,
@@ -22,213 +24,124 @@ import {
   } from 'blockstack';
 import * as blockstack from 'blockstack';
 
-const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
-const username = 'Felix Madutsa';
-const sendername = 'Sender Name';
-//const blockStackId = 'f.id';
-//const status = 'This us just a sample status for a start. I am going high right now so that I can leave';
-const message_text = 'this is my message to the world, and it is this that I am writing because I feel like it and I';
-const time_sent = new Date(Date.UTC(2013, 1, 1, 14, 0, 0));;
+import {
+    addMessage,
+    setMessageArray,
+    updateLoadingStatus,
+    addContacts,
+    setCurrentContact
+  } from '../actions/Actions'
 
-//dummy messages to display in table
-const MESSAGES = []
+// Get the props from state
+function mapHomeStateToProps(state) {
+    //console.log("State Changed");
+    //console.log(state.allReducers);
+    return {
+        isSignedIn: state.allReducers.isSignedIn,
+        currentContact: state.allReducers.currentContact,
+        contactList: state.allReducers.contactList,
+        userProfile: state.allReducers.userProfile,
+        fullUserData: state.allReducers.fullUserData,
+        userName: state.allReducers.userName,
+        userPic: state.allReducers.userPic,
+        userBio: state.allReducers.userBio
+    };
+}
 
-//**************************************************************
-// MessageTile component: helper component
-// unit for contact display
-//**************************************************************
-class MessageTile extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            //user info  
-            currContact: '',
-          }; 
-    }
-
-    //update component when parent state changes
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            currContact: nextProps.currContact,
-        }, () => {
-            console.log(this.state);
-        });
-    }
-
-    render() {
-
-        return (
-
-        <table className="table table-hover">
-            <tbody>
-            {
-                this.props.contactList.map((contact) => {  
-                    return (
-                        <tr onClick={(e) => this.props.clickedMessageTile(contact.id, e)} 
-                            className ={(this.state.currContact == contact.id) ? 'success' : 'none'}>
-                        
-                        <td className="table-row">
-                        <div className="sidebar-message-tile" key={contact.contactName}> 
-                            <div className="other-user-pic"> 
-                                <img src={contact.picture} className="img-rounded message-pic"/>
-                            </div>
-
-                            <div className="message-preview">
-                                <p> 
-                                    <span className="sender-name">{contact.contactName}</span>
-                                    <span className="message-time">
-                                    {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
-                                </p>
-                                 <p className="message-snippet">{message_text}</p>
-                            </div>
-                        </div>
-                        </td></tr>
-                    );
-                })
-            }       
-            </tbody>
-        </table>
-        );
-    }
+//! Link the depatcher for actions we want
+function mapHomeDispatchToProps(dispatch) {
+    return {
+        addMessage: (message) => dispatch(addMessage(message)),
+        setMessageArray: (message) => dispatch(setMessageArray(message)),
+        updateLoadingStatus: (status) => dispatch(updateLoadingStatus(status)),
+        addContacts: (contacts) => dispatch(addContacts(contacts)),
+        setCurrentContact: (currentContact) => dispatch(setCurrentContact(currentContact)),
+    };
 }
 
 //**************************************************************
 // Home component: manages state of messages and
 //**************************************************************
-export class Home extends Component {
+class Home extends Component {
     
-      constructor(props) {
-          super(props);
-          this.state = {
-            //user info  
-            userName: this.props.userName,
-            userId: this.props.userId,
-            userBio: this.props.userBio,
-            contactList: this.props.contactList,
-            //contact currently chatting to -- hard coded rn
-            // change to radjei.id or avthar.id, depending desired test
-            currContact: '',
-            //messages for current chat
-            messageList: [],
-            isLoading: false,
-            selected: '',
-          }; 
+      constructor() {
+        super();
         this.putDataInStorage  = this.putDataInStorage.bind(this);
         this.fetchMessageData  = this.fetchMessageData.bind(this);
         this.clickedMessageTile = this.clickedMessageTile.bind(this);
       }
 
-      //update component when parent state changes
-      componentWillReceiveProps(nextProps) {
-          this.setState({
-              userName: nextProps.userName,
-              userId:nextProps.userId,
-              userBio: nextProps.userBio,
-              contactList: nextProps.contactList,
-          }, () => {
-              console.log('Home state:');
-              console.log(this.state);
-          });
-      }
-
     //puts contact data into users blockstack storage
     putDataInStorage(data, contactName) {
-        //debugging:
-        console.log('In putData()');
-        console.log("Data to be put in storage");
-        console.log(data);
+
         //TO DO: strip contact name of .id
         var rawContact = contactName.replace('.id','');
         var STORAGE_FILE_PATH = rawContact + '.json';
-        console.log('Filename: ' + STORAGE_FILE_PATH);
         var options = {encrypt: false};
         let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
-        this.setState({messageList: data}, () => {
-        console.log('updating state after putting msg in storage');
-        console.log(this.state.messageList);});
-        if (!success){
-        console.log("ERROR: Could not put file in storage");
-        }
+        if (!success) {
+            console.log("ERROR: Could not put file in storage");
+        } 
         else {
-        console.log("SUCCESS: PUT FILE IN USER STORAGE");}
+            console.log("SUCCESS: PUT FILE IN USER STORAGE");
+        }
+
+        this.props.addMessage(data);
     }
 
     //messages conversation from contactId
     fetchMessageData(contactId){
-        this.setState({isLoading: true});
+        this.props.updateLoadingStatus(true);
         const options = { username: contactId  };
-        const FILE_NAME = this.state.userId.replace('.id','') + '.json';
-        console.log(FILE_NAME);
-        var oldMessages = this.state.messageList;
-        getFile(FILE_NAME, options)
-                .then((file) => {
-                  var msgs = JSON.parse(file || '[]')
-                  this.setState({
-                    messageList: msgs,
-                  }, () => {
-                      console.log('Messages after fetching messages from contact ' + contactId);
-                      console.log(this.state.messageList);
-                  })
-                })
-                .catch((error) => {
-                  console.log('could not fetch messages from ' + contactId)
-                  //reset state back to before load
-                  this.setState({messageList: []});
-                })
-                .finally(() => {
-                  this.setState({isLoading: false});
-                })
+        const FILE_NAME = this.props.fullUserData.username('.id','') + '.json';
+        var oldMessages = this.props.messageList;
+
+        getFile(FILE_NAME, options).then((file) => {
+            var msgs = JSON.parse(file || '[]')
+            this.props.addMessage(msgs);
+        }).catch((error) => {
+            this.props.setMessageArray([]);
+        }).finally(() => {
+            this.props.updateLoadingStatus(false);
+        })
     }
 
     clickedMessageTile(data, e) {
-        // prevent the default
-        this.setState({
-            currContact: data,
-        });
-        this.setState({isLoading: true},() => {
-            this.fetchMessageData(this.state.currContact);
+        // TODO: make this a waiting process
+        this.props.setCurrentContact(data);
+        this.props.updateLoadingStatus(false,() => {
+            this.fetchMessageData(this.props.currentContact);
         });
         e.preventDefault();
     }
 
     //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
-        this.setState({isLoading: true},() => {
-            this.fetchMessageData(this.state.currContact);
+        this.props.updateLoadingStatus(false, () => {
+            this.fetchMessageData(this.props.currentContact);
         });
-
-        this.setState({isLoading:false}, () => {
-            console.log('state after component mount: ');
-            console.log(this.state);
+        this.props.updateLoadingStatus(false, () => {
         });
     }
 
-    //Function to add new message to list
+    //! Function to add new message to list
+    //! calls parent func to put in blockstack storage, after adding contact to the list
     addContact(newContact){
-        console.log('in add Contact mode');
-        
-          //add to local list of tweets
-          this.setState((prevState, props) => {
-          //concat new item onto list of old items
-         return {contactList: prevState.contactList.concat(newContact)};
-          }, 
-          () => {
-            //call parent func to put in blockstack storage
-            this.props.putContact(this.state.contactList);
-            console.log('state in ChatScreen after calling parent func');
-            console.log(this.contactList);
-          });
-        }
+        this.props.addContacts(newContact, () => {
+            this.props.putContact(this.props.contactList);
+        });
+    }
 
-  // Event handler for signing out
-  handleSignOut(e) {
-    e.preventDefault();
-    signUserOut(window.location.origin);
-  }
+    // Event handler for signing out
+    handleSignOut(e) {
+        e.preventDefault();
+        signUserOut(window.location.origin);
+    }
 
       render() {
           
+        console.log(this.props.userBio)
+
         return (
             <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
@@ -236,46 +149,39 @@ export class Home extends Component {
                     <div className="col-12 col-lg-3 col-md-4 col-xl-2 bd-sidebar">
                         <div className="profile-sidebar">
                             <div className="profile-userpic">
-                                <img src={this.props.userPic} onClick={(e) => this.clickedMessageTile("Felix", e)} className="img-rounded avatar"/>
+                                <img src={this.props.userPic} className="img-rounded avatar"/>
                             </div>
 
                             <div className="text-center username-id">
-                                <p className="font-weight-bold">{this.props.userName + ' | ' + this.props.userId} </p>
+                                <p className="font-weight-bold">{ this.props.fullUserData.userName + ' | ' + this.props.fullUserData.username } </p>
                             </div>
 
                             <div className="text-center user-status">
-                                <p>{this.props.userBio} </p>
+                                <p>{this.props.userBio}</p>
                             </div>
                         </div>
 
                         <div className="message-and-search-box">
                             <div className="search-bar">
-                                <ContactSearch 
-                                contactList = {this.state.contactList}
-                                addContact = {this.addContact.bind(this)}/>
+                            <ContactSearch/>
                             </div>
 
                             <div className="messages-sidebar">
-                                <MessageTile
-                                    contactList={this.state.contactList} 
-                                    currContact = {this.state.currContact} 
-                                    clickedMessageTile = {this.clickedMessageTile.bind(this)}
-                                />
+
+                                
                             </div>
                         </div>
                     </div>
 
                     <div className="col-lg-9 col-md-9">
-                        <ChatScreen
-                            putData = {this.putDataInStorage}
-                            messageList = {this.state.messageList}
-                            currContact = {this.state.currContact}
-                            userId = {this.state.userId}
-                        />
+
+
                     </div> 
                 </div>
             </div>
         );
       }
 }
-    
+
+// export the class
+export default connect(mapHomeStateToProps, mapHomeDispatchToProps)(Home);
