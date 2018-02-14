@@ -186,10 +186,7 @@ export class Home extends Component {
                   messages = JSON.parse(file || '[]')
                   this.setState({
                     receivedMsgs: msgs,
-                  }, () => {
-                    console.log('Messages I have received');
-                    console.log(this.state.receivedMsgs);
-                    })
+                  })
                 })
                 .catch((error) => {
                   return messages;
@@ -206,7 +203,7 @@ export class Home extends Component {
                   this.setState({
                     inTransitMessages: msgs,
                   }, () => {
-                      console.log('Messages in transit');
+                      console.log('Messages after fetching messages from contact ' + contactId);
                       console.log(this.state.inTransitMessages);
                   })
                 })
@@ -324,10 +321,7 @@ export class Home extends Component {
                   msgs = JSON.parse(file || '[]')
                   this.setState({
                     msgHistory: msgs,
-                  },() => {
-                    console.log('Messages History');
-                    console.log(this.state.msgHistory);
-                    })
+                  })
                 })
                 .catch((error) => {
                   console.log('could not fetch messages from ' + contactId)
