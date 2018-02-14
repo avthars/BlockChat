@@ -470,7 +470,7 @@ export class Home extends Component {
                             putData = {this.putDataInStorage}
                             checkForUpdate = {this.checkForUpdate.bind(this)}
                             writeMessageToTemp = {this.writeMessageToTemp.bind(this)}
-                            messageList = {this.state.msgHistory}
+                            messageList = {this.state.messageList}
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}
                         />
