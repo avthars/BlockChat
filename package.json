@@ -1,6 +1,6 @@
 {
   "name": "blockchat",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Encrypted messaging using Blockstack",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "url": "https://github.com/avthars/BlockChat/issues"
   },
   "homepage": "https://github.com/avthars/BlockChat/blob/master/README.md",
-  "author": "",
-  "license": "MIT",
+  "author": "BlockX",
+  "license": "",
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
