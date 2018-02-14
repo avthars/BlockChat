@@ -59,10 +59,6 @@ class MessageTile extends React.Component {
     }
 
     render() {
-
-        console.log("test")
-        console.log(this.state.contactListMessages)
-        console.log("done")
         
         return (
 
@@ -242,8 +238,11 @@ export class Home extends Component {
             this.getMsgHistory(contact);
         });
 
+        console.log("msg history");
         console.log(this.state.msgHistory)
+        console.log("transit messages");
         console.log(this.state.inTransitMessages)
+        console.log("rec messages");
         console.log(this.state.receivedMsgs)
         
         var msgHistoryLen = this.state.msgHistory.length 
@@ -253,6 +252,10 @@ export class Home extends Component {
         if (msgHistoryLen > 0) {
             var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
             lamportTimeClock = lastMessage.clock
+            //set lamport clock to 0 if null
+            if(!lamportTimeClock){
+                lamportTimeClock = 0;
+            }
         }
 
         var isUpdate = false;
