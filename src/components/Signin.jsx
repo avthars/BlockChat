@@ -19,17 +19,18 @@ export default class Signin extends Component {
     const { handleSignIn } = this.props;
 
     return (
-      <div className="panel-landing" id="section-1">
-        <h1 className="landing-heading">Welcome to BlockChat!</h1>
+      <div className="panel-landing text-center" id="section-1">
+        <h1 className="landing-heading text-center">Welcome to BlockChat!</h1>
         <p className="lead">
           <button
-            className="btn btn-primary btn-lg"
+            className="text-center btn btn-primary btn-lg"
             id="signin-button"
             onClick={ handleSignIn.bind(this) }
           >
             Sign In with BlockstackId
           </button>
         </p>
+        <p>BlockChat is an encrypted messaging platform secured by the bitcoin blockchain to help people reclaim their privacy and data on the internet.</p>
       </div>
     );
   }
