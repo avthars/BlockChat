@@ -18,7 +18,7 @@ export class InputBar extends Component {
           super(props);
           this.state = {
               text: '',
-              currLamportClock: this.props.currLamportClock + 1,
+              currentLamportClock: this.props.currentLamportClock + 1,
           };
       }
 
@@ -69,6 +69,8 @@ export class InputBar extends Component {
           type:"msg",
           clock: this.state.currLamportClock,
         };
+
+        console.log(newMessage);
 
         
 

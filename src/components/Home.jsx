@@ -347,7 +347,7 @@ export class Home extends Component {
     fetchMessageData(contactId){
         this.checkForUpdate(contactId)
         this.setState({isLoading: true});
-        const options = { username:  this.state.userId };
+        const options = {};
         const FILE_NAME = contactId.replace('.id','') + '.json';
         console.log(FILE_NAME);
         var oldMessages = this.state.messageList;

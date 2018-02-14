@@ -40,7 +40,7 @@ export class ChatScreen extends Component {
               messageList: this.props.messageList,
               currContact: this.props.currContact,
               userId: this.props.userId,
-              currLamportClock: this.props.currentLamportClock,
+              currentLamportClock: this.props.currentLamportClock,
         };
       }
 
@@ -55,6 +55,8 @@ export class ChatScreen extends Component {
     addMessage(newMsg) {
         console.log('in add message');
         //add to local list of tweets
+        console.log("Here is there message")
+        console.log(newMsg)
         this.props.writeMessageToTemp(newMsg, this.state.currContact);
         this.setState((prevState, props) => {
         //concat new item onto list of old items
@@ -84,7 +86,7 @@ export class ChatScreen extends Component {
                         messageList = {this.state.messageList}
                         userId = {this.state.userId}
                         currContact = {this.state.currContact}
-                        currLamportClock = {this.state.currLamportClock}
+                        currentLamportClock = {this.props.currentLamportClock}
                         checkForUpdate = {this.props.checkForUpdate}
                     />
             </div>
@@ -104,12 +106,6 @@ export class ChatHeader extends Component {
       }
 
       render() {
-
-        // TODO: get this as props that changes
-        const contactName = this.state.currContact;
-        console.log("I got the contact")
-        console.log(this.props.currContact)
-        console.log("Hello")
 
         lookupProfile(this.props.currContact, "https://core.blockstack.org/v1/names/")
             .then((profile) => {
