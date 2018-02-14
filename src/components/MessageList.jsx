@@ -15,8 +15,8 @@ const avatarImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
 const date = new Date(Date.UTC(2013, 1, 1, 14, 0, 0));
 
 function mapMessageListStateToProps(state) {
-    console.log("in mapMessageListStateToProps")
-    console.log(state.allReducers.messageList)
+    //console.log("in mapMessageListStateToProps")
+    //console.log(state.allReducers.messageList)
     return {
         isSignedIn: state.allReducers.isSignedIn,
         messageList: state.allReducers.messageList,

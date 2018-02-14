@@ -103,7 +103,7 @@ export const setSearchBarText = text => {
 
 //! Creates an action to send a message
 export const setInputBarText = text => {
-    console.log('actionc called')
+    //console.log('actionc called')
     return {
         type: SET_INPUT_BAR_TEXT,
         payload: text

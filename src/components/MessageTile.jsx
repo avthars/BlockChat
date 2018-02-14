@@ -61,8 +61,8 @@ class MessageTile extends React.Component {
                     {
                         this.props.contactList.map((contact) => {  
 
-                            console.log('contact Rendering')
-                            console.log(contact)
+                            //console.log('contact Rendering')
+                            //console.log(contact)
                             //console.log(this.props.lastMessage)
                             //console.log(this.props.lastMessage[contact.id])
                            var lastMessage = {text: ''}

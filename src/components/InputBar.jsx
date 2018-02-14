@@ -89,7 +89,7 @@ class InputBar extends Component {
           deleted: true,
         };
 
-        console.log(idnum)
+        //console.log(idnum)
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
@@ -98,7 +98,7 @@ class InputBar extends Component {
 
     render(){
 
-      console.log(this.props.inputBarText)
+      //console.log(this.props.inputBarText)
         return(
           <div className="row" id = "new-message-footer">
           <form className = "form-inline" onSubmit={(event) => this.handleSubmit(event)}>

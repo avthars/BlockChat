@@ -162,7 +162,7 @@ class App extends Component {
 
     if (isUserSignedIn()) {
       return (
-        <Home/>
+        <Home putContact  = {this.putDataInStorage}/>
       );
 
     } else {

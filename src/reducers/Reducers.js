@@ -92,7 +92,7 @@ function updateLoadingStatusReducer(state = initialState, action = {}) {
 //! Reducer to handle actions on messages
 //! The payload is a messaege object that is define in? TODO: define this
 function messageReducer(state = initialState, action = {}) {
-    console.log("messageReducer Called");
+    //console.log("messageReducer Called");
     switch (action.type) {
     case ADD_MESSAGE:
         return Object.assign({}, state, {
@@ -110,14 +110,14 @@ function messageReducer(state = initialState, action = {}) {
 //! Reducer to add the last message to a list of last messages that
 //! have been sent or removed from a user
 function updateLastMessageReducer(state = initialState, action = {}) {
-    console.log("updateLastMessageReducer Called");
+    //console.log("updateLastMessageReducer Called");
     switch (action.type) {
     case UPDATE_LAST_SEEN:
-        console.log('before')
-        console.log(state.lastMessage)
+        //console.log('before')
+        //console.log(state.lastMessage)
         state.lastMessage[action.payload.userID] = action.payload.message
-        console.log('after')
-        console.log(state.lastMessage)
+        //console.log('after')
+        //console.log(state.lastMessage)
         return Object.assign({}, state, {
             lastMessage: state.lastMessage
         });
@@ -153,8 +153,8 @@ function setSearchBarTextReducer(state = initialState, action = {}) {
 
 
 function setInputBarTextReducer(state = initialState, action = {}) {
-    console.log("setInputBarTextReducer");
-    console.log('Here 9')
+    //console.log("setInputBarTextReducer");
+    //console.log('Here 9')
     switch (action.type) {
     case SET_INPUT_BAR_TEXT:
         return Object.assign({}, state, {
@@ -166,7 +166,7 @@ function setInputBarTextReducer(state = initialState, action = {}) {
 }
 
 function allReducers(state = initialState, action = {}) {
-    console.log('Here 7')
+    //console.log('Here 7')
     switch (action.type) {
         case LOGIN:
             return logInUserReducer(state, action);
@@ -187,7 +187,7 @@ function allReducers(state = initialState, action = {}) {
             return currentContactReducer(state, action);
         
         case SET_INPUT_BAR_TEXT:
-        console.log('Here 8')
+        //console.log('Here 8')
             return setInputBarTextReducer(state, action);
 
         case SET_SEARCH_BAR_TEXT:
