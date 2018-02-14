@@ -357,6 +357,7 @@ export class Home extends Component {
 
     //messages conversation from contactId
     fetchMessageData(contactId){
+        console.log('IN FETCH DATA FOR' + contactId);
         this.checkForUpdate(contactId)
         this.setState({isLoading: true});
         const options = { username:  this.state.userId };
