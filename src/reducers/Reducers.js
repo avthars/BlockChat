@@ -18,7 +18,8 @@ import {
     SET_CURRENT_CONTACT,
     SET_MESSAGE,
     SET_INPUT_BAR_TEXT,
-    SET_SEARCH_BAR_TEXT
+    SET_SEARCH_BAR_TEXT,
+    UPDATE_LAST_SEEN
 } from '../constants/ActionTypes';
 
 //! define an initial state
@@ -28,6 +29,7 @@ const initialState = {
     contactList: [],        //!< The list of all the users' contacts
     messageList: [],         //!< List of the last couple of messages that were sent
                             //!< between the currentContact and this user
+    lastMessage: {},        //!< A list of last message sent to or received from a user 
     userName: '',
     userPic: null,
     userBio: '',
@@ -105,6 +107,25 @@ function messageReducer(state = initialState, action = {}) {
     }
 }
 
+//! Reducer to add the last message to a list of last messages that
+//! have been sent or removed from a user
+function updateLastMessageReducer(state = initialState, action = {}) {
+    console.log("updateLastMessageReducer Called");
+    switch (action.type) {
+    case UPDATE_LAST_SEEN:
+        console.log('before')
+        console.log(state.lastMessage)
+        state.lastMessage[action.payload.userID] = action.payload.message
+        console.log('after')
+        console.log(state.lastMessage)
+        return Object.assign({}, state, {
+            lastMessage: state.lastMessage
+        });
+    default:
+       return state;
+    }
+}
+
 //! Reducer to handle actions on the current contact
 function currentContactReducer(state = initialState, action = {}) {
     //console.log("currentContactReducer Called");
@@ -117,8 +138,6 @@ function currentContactReducer(state = initialState, action = {}) {
        return state;
     }
 }
-
-
 
 function setSearchBarTextReducer(state = initialState, action = {}) {
     //console.log("setSearchBarTextReducer");
@@ -171,7 +190,9 @@ function allReducers(state = initialState, action = {}) {
 
         case SET_SEARCH_BAR_TEXT:
             return setSearchBarTextReducer(state, action);
-
+        
+        case UPDATE_LAST_SEEN:
+            return updateLastMessageReducer(state, action);
         default:
            return state;
     }

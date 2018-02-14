@@ -23,11 +23,12 @@ const time_sent = new Date();
 
 // Get the props from state
 function mapMessageTileStateToProps(state) {
-    console.log(state.allReducers.contactList)
+    //console.log(state.allReducers.contactList)
     return {
         isSignedIn: state.allReducers.isSignedIn,
         currentContact: state.allReducers.currentContact,
-        contactList: state.allReducers.contactList
+        contactList: state.allReducers.contactList,
+        lastMessage: state.allReducers.lastMessage
     };
 }
 
@@ -60,26 +61,36 @@ class MessageTile extends React.Component {
                     <tbody>
                     {
                         this.props.contactList.map((contact) => {  
+
+                            console.log('contact Rendering')
+                            console.log(contact)
+                            //console.log(this.props.lastMessage)
+                            //console.log(this.props.lastMessage[contact.id])
+                           var lastMessage = {text: ''}
+                            if (contact.id in this.props.lastMessage) {
+                                lastMessage = this.props.lastMessage[contact.id]
+                            }
+
                             return (
                                 <tr onClick={(e) => this.props.clickedMessageTile(contact.id, e)} 
                                     className ={(this.props.currentContact == contact.id) ? 'success' : 'none'}>
-                                
-                                <td className="table-row">
-                                <div className="sidebar-message-tile" key={contact.contactName}> 
-                                    <div className="other-user-pic"> 
-                                        <img src={contact.picture} className="img-rounded message-pic"/>
-                                    </div>
-        
-                                    <div className="message-preview">
-                                        <p> 
-                                            <span className="sender-name">{contact.contactName}</span>
-                                            <span className="message-time">
-                                            {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
-                                        </p>
-                                         <p className="message-snippet">{message_text}</p>
-                                    </div>
-                                </div>
-                                </td></tr>
+                                    <td className="table-row">
+                                        <div className="sidebar-message-tile" key={contact.contactName}> 
+                                            <div className="other-user-pic"> 
+                                                <img src={contact.picture} className="img-rounded message-pic"/>
+                                            </div>
+                
+                                            <div className="message-preview">
+                                                <p> 
+                                                    <span className="sender-name">{contact.contactName}</span>
+                                                    <span className="message-time">
+                                                    {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
+                                                </p>
+                                                <p className="message-snippet">{lastMessage.text}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             );
                         })
                     }       

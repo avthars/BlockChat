@@ -30,7 +30,8 @@ import {
     setMessageArray,
     updateLoadingStatus,
     addContacts,
-    setCurrentContact
+    setCurrentContact,
+    updateLastMessage
   } from '../actions/Actions'
 
 // Get the props from state
@@ -45,7 +46,8 @@ function mapHomeStateToProps(state) {
         fullUserData: state.allReducers.fullUserData,
         userName: state.allReducers.userName,
         userPic: state.allReducers.userPic,
-        userBio: state.allReducers.userBio
+        userBio: state.allReducers.userBio,
+        lastMessage: state.allReducers.lastMessage
     };
 }
 
@@ -55,6 +57,7 @@ function mapHomeDispatchToProps(dispatch) {
         addMessage: (message) => dispatch(addMessage(message)),
         setMessageArray: (message) => dispatch(setMessageArray(message)),
         updateLoadingStatus: (status) => dispatch(updateLoadingStatus(status)),
+        updateLastMessage: (userID, newMessage) => dispatch(updateLastMessage(userID, newMessage)),
         addContacts: (contacts) => dispatch(addContacts(contacts)),
         setCurrentContact: (currentContact) => dispatch(setCurrentContact(currentContact)),
     };
@@ -101,6 +104,19 @@ class Home extends Component {
         getFile(FILE_NAME, options).then((file) => {
             var msgs = JSON.parse(file || '[]')
             this.props.addMessage(msgs);
+
+            // add the last message if we have not seen it
+            var lastMessage = msgs[msgs.length - 1];
+            if (contactId in this.props.lastMessage) {
+                if (lastMessage.date > this.props.lastMessage[contactId].date) {
+                    this.props.updateLastMessage(contactId, lastMessage)
+                   
+                }
+            } else {
+                this.props.updateLastMessage(contactId, lastMessage)
+            }
+            
+
         }).catch((error) => {
             this.props.setMessageArray([]);
         }).finally(() => {
@@ -127,17 +143,15 @@ class Home extends Component {
     }
 
     clickedMessageTile(data, e) {
-        this.props.setCurrentContact(data);
-        console.log('Here 0')
-        this.props.updateLoadingStatus(false, () => {
-            console.log('Here')
-            //this.fetchMessageData(this.props.currentContact);
-        });
 
-        console.log("Here 3")
-        console.log(this.props.currentContact)
-        this.fetchMessageData(this.props.currentContact);
-        e.preventDefault();
+        if (this.props.currentContact != data) {
+            this.props.setCurrentContact(data);
+            this.props.updateLoadingStatus(false, () => {
+                //this.fetchMessageData(this.props.currentContact);
+            });
+            this.fetchMessageData(data);
+            e.preventDefault();
+        }
     }
 
     // Event handler for signing out

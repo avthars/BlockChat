@@ -19,7 +19,8 @@ import {
     SET_CURRENT_CONTACT,
     SET_MESSAGE,
     SET_INPUT_BAR_TEXT,
-    SET_SEARCH_BAR_TEXT
+    SET_SEARCH_BAR_TEXT,
+    UPDATE_LAST_SEEN
 } from '../constants/ActionTypes';
 
 //! Creates an action to save the date of the user after being logged in
@@ -73,6 +74,14 @@ export const sendMessage = text => {
     return {
         type: SEND_MESSAGE,
         payload: text
+    }
+}
+
+//! Creates an action to send a message
+export const updateLastMessage = (usrID, newMessage) => {
+    return {
+        type: UPDATE_LAST_SEEN,
+        payload: { userID: usrID, message: newMessage }
     }
 }
 
