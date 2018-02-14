@@ -44,6 +44,8 @@ class MessageTile extends React.Component {
         this.state = {
             //user info  
             currContact: '',
+            contactListMessages: {},
+            contactListLM: {},
           }; 
     }
 
@@ -58,6 +60,10 @@ class MessageTile extends React.Component {
 
     render() {
 
+        console.log("test")
+        console.log(this.state.contactListMessages)
+        console.log("done")
+        
         return (
 
         <table className="table table-hover">
@@ -78,9 +84,9 @@ class MessageTile extends React.Component {
                                 <p> 
                                     <span className="sender-name">{contact.contactName}</span>
                                     <span className="message-time">
-                                    {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
+                                    {/*time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()*/}</span>
                                 </p>
-                                 <p className="message-snippet">{message_text}</p>
+                                 <p className="message-snippet">{"Hey there!  Whats"}</p> 
                             </div>
                         </div>
                         </td></tr>
@@ -111,12 +117,17 @@ export class Home extends Component {
             currContact: '',
             //messages for current chat
             messageList: [],
+            msgHistory: [],
+            receivedMsgs: [],
+            inTransitMessages:[],
             isLoading: false,
             selected: '',
+            currentLamportClock: 0,
           }; 
         this.putDataInStorage  = this.putDataInStorage.bind(this);
         this.fetchMessageData  = this.fetchMessageData.bind(this);
         this.clickedMessageTile = this.clickedMessageTile.bind(this);
+        this.getContactMsgs = this.getContactMsgs.bind(this);
       }
 
       //update component when parent state changes
@@ -134,6 +145,8 @@ export class Home extends Component {
 
     //puts contact data into users blockstack storage
     putDataInStorage(data, contactName) {
+        // Before you put any data in storage, you first try to determine which of you two has the most up to date information.
+        // You add to the person who has the most updated.
         //debugging:
         console.log('In putData()');
         console.log("Data to be put in storage");
@@ -144,6 +157,8 @@ export class Home extends Component {
         console.log('Filename: ' + STORAGE_FILE_PATH);
         var options = {encrypt: false};
         let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
+
+        // Might have to change this.
         this.setState({messageList: data}, () => {
         console.log('updating state after putting msg in storage');
         console.log(this.state.messageList);});
@@ -154,11 +169,175 @@ export class Home extends Component {
         console.log("SUCCESS: PUT FILE IN USER STORAGE");}
     }
 
+    putInTemp(data, contactName) {
+        var rawContact = contactName.replace('.id','');
+        var STORAGE_FILE_PATH = rawContact + '_temp.json';
+        var options = {encrypt: false};
+        let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
+    }
+
+    // Gets new messages contact has sent to user.
+    getContactMsgs(contact){
+        const options = {username:contact};
+        const FILE_NAME = this.state.userId.replace('.id','') + '_temp.json';
+        var messages = []
+        getFile(FILE_NAME, options)
+                .then((file) => {
+                  messages = JSON.parse(file || '[]')
+                  this.setState({
+                    receivedMsgs: msgs,
+                  })
+                })
+                .catch((error) => {
+                  return messages;
+                })
+    }
+
+    // Get messages user has sent to contact.
+    getSentMsg(contact){
+        const options = { username: this.state.userId  };
+        const FILE_NAME = contact.replace('.id','') + '_temp.json';
+        getFile(FILE_NAME, options)
+                .then((file) => {
+                  var msgs = JSON.parse(file || '[]')
+                  this.setState({
+                    inTransitMessages: msgs,
+                  }, () => {
+                      console.log('Messages after fetching messages from contact ' + contactId);
+                      console.log(this.state.inTransitMessages);
+                  })
+                })
+                .catch((error) => {
+                    this.setState({inTransitMessages: []});
+                })
+    }
+
+    // Writing message to temp file.
+    writeMessageToTemp(data, contact){
+        this.state.inTransitMessages.concat(data);
+        this.putInTemp(this.state.inTransitMessages, contact);
+    }
+
+    // Checks for updates from the contact
+    checkForUpdate(contact) {
+        // Retrieve new messages the contact has sent.
+        
+        this.setState({isLoading: true},() => {
+            this.getContactMsgs(contact);
+        });
+
+        // Retrieve list of messages you have sent.
+        this.setState({isLoading: true},() => {
+            this.getSentMsg(contact);
+        });
+
+        // Retrieve message history between you and the contact.
+        this.setState({isLoading: true},() => {
+            this.getMsgHistory(contact);
+        });
+        
+        var msgHistoryLen = this.state.msgHistory.length 
+
+        // Lamport time clock for checking which messages are new.
+        var lamportTimeClock = 0;
+        if (msgHistoryLen > 0) {
+            var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
+            lamportTimeClock = lastMessage.clock
+        }
+
+        var isUpdate = false;
+        // Go through the received messages list and add the messages that are new to the message history..
+        for (var i = 0; i < this.state.receivedMsgs.length; i++){
+            if (this.state.receivedMsgs[i].clock >= lamportTimeClock) {
+                lamportTimeClock = this.state.receivedMsgs[i].clock;
+                if (this.state.receivedMsgs[i].type == "msg"){
+                    this.state.msgHistory.concat(this.state.receivedMsgs[i]);
+                    isUpdate = true;
+                    if (contact == this.state.currContact){
+                        this.state.messageList.concat(this.state.receivedMsgs[i])
+                    }
+                }
+            }
+        }
+
+        if (contact == this.state.currContact){
+            if (lamportTimeClock > this.state.currentLamportClock){
+                this.setState({currentLamportClock: lamportTimeClock,})
+            }
+        }
+
+        if (isUpdate){
+
+            // Write the new updated messages to storage.
+            putDataInStorage(msgHistory, contact);
+
+
+            // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
+            var newInTransitmsgs = [];
+
+            var largestLamportClock = lamportTimeClock;
+            for (var i = 0; i < this.state.inTransitMessages; i++) {
+                if (this.state.inTransitMessages[i].clock > lamportTimeClock){
+                    newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                    if (this.state.inTransitMessages[i].clock > largestLamportClock){
+                        largestLamportClock = this.state.inTransitMessages[i].clock;
+                    }
+                }
+            }
+
+            largestLamportClock++;
+            // Write an acknowledgement message to your temp file.
+            // Create a message of type ack and clock number equal to the highest lamport clock you have seen.
+            var ackMessage = {
+                id: 0, 
+                text: "", 
+                by: this.state.userId, 
+                date: Date.now(),
+                read: false,
+                delivered: false,
+                deleted: true,
+                clock: largestLamportClock + 1,// I have to figure out what to put here.
+                type: "ack",
+            }
+
+            newInTransitmsgs.concat(ackMessage);
+
+            this.setState({inTransitMessages: newInTransitmsgs,})
+
+            putInTemp(this.state.inTransitMessages, contact);
+
+        }
+
+    }
+
+    // Get history of conversation between the user and the contact.
+    getMsgHistory(contactId) {
+        const options = { username: this.state.userId };
+        const FILE_NAME = contactId.replace('.id','') + '.json';
+        console.log(FILE_NAME);
+        var msgs = [];
+        getFile(FILE_NAME, options)
+                .then((file) => {
+                  msgs = JSON.parse(file || '[]')
+                  this.setState({
+                    msgHistory: msgs,
+                  })
+                })
+                .catch((error) => {
+                  console.log('could not fetch messages from ' + contactId)
+                  //reset state back to before load
+                  // Have to figure out to alert the system so that I do not over write messages.
+                })
+    }
+
+
+
+
     //messages conversation from contactId
     fetchMessageData(contactId){
         this.setState({isLoading: true});
-        const options = { username: contactId  };
-        const FILE_NAME = this.state.userId.replace('.id','') + '.json';
+        const options = { username:  this.state.userId };
+        const FILE_NAME = contactId.replace('.id','') + '.json';
         console.log(FILE_NAME);
         var oldMessages = this.state.messageList;
         getFile(FILE_NAME, options)
@@ -253,6 +432,9 @@ export class Home extends Component {
                                 <MessageTile
                                     contactList={this.state.contactList} 
                                     currContact = {this.state.currContact} 
+                                    messageList = {this.state.messageList}
+                                    userName = {this.state.userName}
+                                    currentLamportClock = {this.state.currentLamportClock}
                                     clickedMessageTile = {this.clickedMessageTile.bind(this)}
                                 />
                             </div>
@@ -262,6 +444,8 @@ export class Home extends Component {
                     <div className="col-lg-9 col-md-9">
                         <ChatScreen
                             putData = {this.putDataInStorage}
+                            checkForUpdate = {this.checkForUpdate.bind(this)}
+                            writeMessageToTemp = {this.writeMessageToTemp.bind(this)}
                             messageList = {this.state.messageList}
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}

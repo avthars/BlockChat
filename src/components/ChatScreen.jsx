@@ -11,6 +11,17 @@ import React, { Component, Link } from 'react';
 import { InputBar } from './InputBar.jsx';
 import {MessageDisplay} from './MessageDisplay.jsx';
 
+import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
+
+
 //**************************************************************
 //InputBox component: User enters a new message and is 
 //displayed in chat screen
@@ -29,6 +40,7 @@ export class ChatScreen extends Component {
               messageList: this.props.messageList,
               currContact: this.props.currContact,
               userId: this.props.userId,
+              currLamportClock: this.props.currentLamportClock,
         };
       }
 
@@ -41,12 +53,13 @@ export class ChatScreen extends Component {
 
     //Function to add new message to list
     addMessage(newMsg) {
-      console.log('in add message');
-      //add to local list of tweets
-      this.setState((prevState, props) => {
-      //concat new item onto list of old items
-     return {messageList: prevState.messageList.concat(newMsg)};
-      }, 
+        console.log('in add message');
+        //add to local list of tweets
+        this.props.writeMessageToTemp(newMsg, this.state.currContact);
+        this.setState((prevState, props) => {
+        //concat new item onto list of old items
+        return {messageList: prevState.messageList.concat(newMsg)};
+        }, 
       () => {
         //call parent func to put in blockstack storage
         this.props.putData(this.state.messageList, this.state.currContact);
@@ -63,17 +76,22 @@ export class ChatScreen extends Component {
                     <MessageDisplay 
                         messageList = {this.state.messageList}
                         userId = {this.state.userId}
+                        currContact = {this.state.currContact}
                     />
                     </div>
                     <InputBar 
                         addMessage = {this.addMessage.bind(this)}
                         messageList = {this.state.messageList}
                         userId = {this.state.userId}
+                        currContact = {this.state.currContact}
+                        currLamportClock = {this.state.currLamportClock}
+                        checkForUpdate = {this.props.checkForUpdate}
                     />
             </div>
         );
       }
 }
+
 
 export class ChatHeader extends Component {
     
@@ -81,6 +99,7 @@ export class ChatHeader extends Component {
           super(props);
           this.state = {
             currContact: this.props.currContact,
+            currContactName: "",
           };
       }
 
@@ -92,10 +111,18 @@ export class ChatHeader extends Component {
         console.log(this.props.currContact)
         console.log("Hello")
 
+        lookupProfile(this.props.currContact, "https://core.blockstack.org/v1/names/")
+            .then((profile) => {
+                this.state.currContactName = profile.name
+            })
+            .catch((error) => {
+                console.log('could not find contact with id: ' + name)
+            }) 
+
         return (
             <div className="row" id="chat-header">
                 <div className="col-lg-10 col-sm-10 col-md-10 col-*-offset-0" id="chat-header-name"> 
-                    <h4 className= "current-chat-label">{this.props.currContact}</h4>
+                    <h4 className= "current-chat-label">{this.state.currContactName}</h4>
                 </div >
                 <div className="col-lg-2 col-sm-2 col-md-2 col-*-offset-10">
                     <div id="search-audio-video">
