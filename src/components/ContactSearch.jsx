@@ -65,11 +65,11 @@ export class ContactSearch extends Component {
                 };
                 // Add it to the object.
                 this.props.addContact(newContact);
-                console.log("I got here");
+                //console.log("I got here");
                 console.log(profile.image[0].contentUrl);
             })
             .catch((error) => {
-                console.log('could not find contact with id: ' + name)
+                console.log('BlockChat ERROR: could not find contact with id: ' + name)
             }) 
 
 

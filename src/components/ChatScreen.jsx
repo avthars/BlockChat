@@ -110,10 +110,8 @@ export class ChatHeader extends Component {
 
         // TODO: get this as props that changes
         const contactName = this.state.currContact;
-        console.log("I got the contact")
-        console.log(this.props.currContact)
-        console.log("Hello")
-
+    
+        //wastful, pass this from state
         lookupProfile(this.props.currContact, "https://core.blockstack.org/v1/names/")
             .then((profile) => {
                 this.state.currContactName = profile.name
