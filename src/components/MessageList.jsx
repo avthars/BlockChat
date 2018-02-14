@@ -16,11 +16,13 @@ const date = new Date(Date.UTC(2013, 1, 1, 14, 0, 0));
 
 function mapMessageListStateToProps(state) {
     //console.log("in mapMessageListStateToProps")
-    //console.log(state.allReducers.messageList)
+    console.log(state.allReducers.contactPictures)
     return {
         isSignedIn: state.allReducers.isSignedIn,
         messageList: state.allReducers.messageList,
-        fullUserData: state.allReducers.fullUserData
+        fullUserData: state.allReducers.fullUserData,
+        userPic: state.allReducers.userPic,
+        contactPictures: state.allReducers.contactPictures
     };
 }
 
@@ -62,7 +64,10 @@ class MessageList extends Component {
                     <ul className = "list-group">
                         <div className="borderless">
                             {this.props.messageList.map(message => (
-                                <MessageInstance message={message} userId = {this.props.fullUserData.username} />
+                                <MessageInstance message={message}
+                                userId = {this.props.fullUserData.username} 
+                                contactPictures = {this.props.contactPictures}
+                                />
                             ))}
                         </div>
                     </ul>
@@ -115,7 +120,7 @@ export class MessageInstance extends Component {
                              </div>
                         </div>
                         <div className="sender-message-photo">
-                            <img src={avatarImage} className="img-rounded message-photo"/>
+                            <img src={this.props.userPic} className="img-rounded message-photo"/>
                         </div>
                         
                     </div>
@@ -128,7 +133,7 @@ export class MessageInstance extends Component {
                 <li className = "list-group-item text-left" key={this.props.message.id}>
                     <div>
                         <div className="sender-message-photo">
-                            <img src={avatarImage} className="img-rounded message-photo"/>
+                            <img src={this.props.contactPictures[this.props.message.by]} className="img-rounded message-photo"/>
                         </div>
                         <div className="message-text">
                             <div className="message-timstamp"> {displayTime} </div>

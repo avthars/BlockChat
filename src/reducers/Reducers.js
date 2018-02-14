@@ -19,7 +19,8 @@ import {
     SET_MESSAGE,
     SET_INPUT_BAR_TEXT,
     SET_SEARCH_BAR_TEXT,
-    UPDATE_LAST_SEEN
+    UPDATE_LAST_SEEN,
+    UPDATE_USER_PIC
 } from '../constants/ActionTypes';
 
 //! define an initial state
@@ -29,7 +30,8 @@ const initialState = {
     contactList: [],        //!< The list of all the users' contacts
     messageList: [],         //!< List of the last couple of messages that were sent
                             //!< between the currentContact and this user
-    lastMessage: {},        //!< A list of last message sent to or received from a user 
+    lastMessage: {},        //!< A list of last message sent to or received from a user
+    contactPictures: {},
     userName: '',
     userPic: null,
     userBio: '',
@@ -37,7 +39,6 @@ const initialState = {
     isLoading: false,
     userProfile: {},        //!< Has userName, userBio and all the other profile information
     fullUserData: {},       //!< Has full data and other stuff like userID etc.
-
 
     // Data for the search Bar
     searchBarText: '',
@@ -50,13 +51,16 @@ function logInUserReducer(state = initialState, action = {}) {
     //console.log("logInUserReducer Called");
     switch (action.type) {
     case LOGIN:
+        state.contactPictures[action.payload.userName] = action.payload.userPic;
+
         return Object.assign({}, state, {
             isSignedIn: true,
             userProfile: action.payload.userProfile,
             fullUserData: action.payload.fullUserData,
             userName: action.payload.userName,
             userPic: action.payload.userPic,
-            userBio: action.payload.userBio
+            userBio: action.payload.userBio,
+            contactPictures: state.contactPictures
         });
     default:
        return state;
@@ -65,7 +69,15 @@ function logInUserReducer(state = initialState, action = {}) {
 
 //! Reducer to update contacts
 function addContactsReducer(state = initialState, action = {}) {
-    //console.log("addContactsReducer Called");
+    console.log("addContactsReducer Called");
+    console.log(action.payload);
+
+    for (var i = 0; i < action.payload.length; i++) {
+        console.log(action.payload[i]);
+        state.contactPictures[action.payload[i].id] = action.payload[i].picture;
+    }
+
+
     switch (action.type) {
     case ADD_CONTACT:
         return Object.assign({}, state, {
@@ -120,6 +132,25 @@ function updateLastMessageReducer(state = initialState, action = {}) {
         //console.log(state.lastMessage)
         return Object.assign({}, state, {
             lastMessage: state.lastMessage
+        });
+    default:
+       return state;
+    }
+}
+
+//! Reducer to add the last message to a list of last messages that
+//! have been sent or removed from a user
+function updateContactPicturesReducer(state = initialState, action = {}) {
+    //console.log("updateLastMessageReducer Called");
+    switch (action.type) {
+    case UPDATE_USER_PIC:
+        //console.log('before')
+        //console.log(state.lastMessage)
+        state.contactPictures[action.payload.userID] = action.payload.userPic
+        //console.log('after')
+        //console.log(state.lastMessage)
+        return Object.assign({}, state, {
+            contactPictures: state.contactPictures
         });
     default:
        return state;
@@ -195,6 +226,9 @@ function allReducers(state = initialState, action = {}) {
         
         case UPDATE_LAST_SEEN:
             return updateLastMessageReducer(state, action);
+
+        case UPDATE_USER_PIC:
+            return updateContactPicturesReducer(state, action);
         default:
            return state;
     }

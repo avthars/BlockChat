@@ -85,6 +85,14 @@ export const updateLastMessage = (usrID, newMessage) => {
     }
 }
 
+//! Creates an action to send a message
+export const updateUserPicMessage = (usrID, usrPic) => {
+    return {
+        type: UPDATE_USER_PIC,
+        payload: { userID: usrID, userPic: usrPic }
+    }
+}
+
 //! Creates an action to send a message. userID == blockStackID
 export const setCurrentContact = userID => {
     return {

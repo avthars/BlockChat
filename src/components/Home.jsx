@@ -137,6 +137,8 @@ class Home extends Component {
     //! Function to add new message to list
     //! calls parent func to put in blockstack storage, after adding contact to the list
     addContact(newContact){
+        console.log('contact added')
+        console.log(newContact)
         this.props.addContacts(newContact)
         this.props.putContact(this.props.contactList);
     }
