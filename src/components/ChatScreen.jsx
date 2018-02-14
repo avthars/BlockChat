@@ -48,16 +48,16 @@ export class ChatScreen extends Component {
         this.setState({
             messageList: nextProps.messageList,
             currContact: nextProps.currContact,
+            currentLamportClock: nextProps.currentLamportClock,
         });
     }
 
     //Function to add new message to list
     addMessage(newMsg) {
-        console.log('in add message');
+        console.log('in add message for ');
+        console.log(newMsg);
         //add to local list of tweets
-        console.log("Here is there message")
-        console.log(newMsg)
-        this.props.writeMessageToTemp(newMsg, this.state.currContact);
+        //this.props.writeMessageToTemp(newMsg, this.state.currContact);
         this.setState((prevState, props) => {
         //concat new item onto list of old items
         return {messageList: prevState.messageList.concat(newMsg)};
@@ -65,7 +65,8 @@ export class ChatScreen extends Component {
       () => {
         //call parent func to put in blockstack storage
         this.props.putData(this.state.messageList, this.state.currContact);
-        console.log('state in ChatScreen after calling parent func');
+        this.props.writeMessageToTemp(newMsg, this.state.currContact);
+        console.log('state in ChatScreen after calling parent funcs');
         console.log(this.state.messageList);
       });
     }
@@ -107,6 +108,10 @@ export class ChatHeader extends Component {
 
       render() {
 
+        // TODO: get this as props that changes
+        const contactName = this.state.currContact;
+    
+        //wastful, pass this from state
         lookupProfile(this.props.currContact, "https://core.blockstack.org/v1/names/")
             .then((profile) => {
                 this.state.currContactName = profile.name

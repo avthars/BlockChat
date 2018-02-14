@@ -22,6 +22,11 @@ export class InputBar extends Component {
           };
       }
 
+      //listen for props updates in parent
+      componentWillReceiveProps(nextProps){
+        this.setState({currLamportClock: nextProps.currLamportClock+1});
+      }
+
       handleChange(event) {
         //gets value entered into target and set it to
         // 'text' state field
@@ -37,13 +42,13 @@ export class InputBar extends Component {
           event.stopPropagation();
           this.onSendMessage(event);
         }
-        console.log("here now 1");
+        //console.log("here now 1");
       }
 
       onSendMessage(event){
         event.preventDefault();
         
-        console.log("here now");
+        //console.log("here now");
 
         if (!this.state.text.length) {
           return;
@@ -76,8 +81,7 @@ export class InputBar extends Component {
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
-
-        console.log("it feels good")
+        console.log("Sent to add message")
 
         //set text in box back to empty after message saved
         this.setState({text: ''});

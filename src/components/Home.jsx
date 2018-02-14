@@ -59,10 +59,6 @@ class MessageTile extends React.Component {
     }
 
     render() {
-
-        console.log("test")
-        console.log(this.state.contactListMessages)
-        console.log("done")
         
         return (
 
@@ -217,8 +213,11 @@ export class Home extends Component {
 
     // Writing message to temp file.
     writeMessageToTemp(data, contact){
-        this.state.inTransitMessages.concat(data);
-        this.putInTemp(this.state.inTransitMessages, contact);
+        this.setState((prevState, props) => {
+            return {inTransitMessages: prevState.inTransitMessages.concat(data)};
+          }, () => {
+            this.putInTemp(this.state.inTransitMessages, contact);
+          });
     }
 
     // Checks for updates from the contact
@@ -239,8 +238,11 @@ export class Home extends Component {
             this.getMsgHistory(contact);
         });
 
+        console.log("msg history");
         console.log(this.state.msgHistory)
+        console.log("transit messages");
         console.log(this.state.inTransitMessages)
+        console.log("rec messages");
         console.log(this.state.receivedMsgs)
         
         var msgHistoryLen = this.state.msgHistory.length 
@@ -250,6 +252,10 @@ export class Home extends Component {
         if (msgHistoryLen > 0) {
             var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
             lamportTimeClock = lastMessage.clock
+            //set lamport clock to 0 if null
+            if(!lamportTimeClock){
+                lamportTimeClock = 0;
+            }
         }
 
         var isUpdate = false;
@@ -258,10 +264,16 @@ export class Home extends Component {
             if (this.state.receivedMsgs[i].clock >= lamportTimeClock) {
                 lamportTimeClock = this.state.receivedMsgs[i].clock;
                 if (this.state.receivedMsgs[i].type == "msg"){
-                    this.state.msgHistory.concat(this.state.receivedMsgs[i]);
-                    isUpdate = true;
+                    this.setState((prevState, props) => {
+                        return {msgHistory: prevState.msgHistory.concat(this.state.receivedMsgs[i])};
+                      }, () => {isUpdate = true;});
+                    
                     if (contact == this.state.currContact){
-                        this.state.messageList.concat(this.state.receivedMsgs[i])
+
+                        this.setState((prevState, props) => {
+                            return {messageList: prevState.messageList.concat(this.state.receivedMsgs[i])};
+                          });
+                    
                     }
                 }
             }
@@ -345,6 +357,7 @@ export class Home extends Component {
 
     //messages conversation from contactId
     fetchMessageData(contactId){
+        console.log('IN FETCH DATA FOR' + contactId);
         this.checkForUpdate(contactId)
         this.setState({isLoading: true});
         const options = {};
