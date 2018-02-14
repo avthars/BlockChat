@@ -52,6 +52,8 @@ export class InputBar extends Component {
         //create the message object
         console.log(this.state.text);
 
+        this.props.checkForUpdate(this.props.currContact);
+
         //create new message
         var idnum = this.props.messageList.length;
         // id, text, creator, date
@@ -68,10 +70,12 @@ export class InputBar extends Component {
           clock: this.state.currLamportClock,
         };
 
-        this.props.checkForUpdate(this.props.currContact);
+        
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
+
+        console.log("it feels good")
 
         //set text in box back to empty after message saved
         this.setState({text: ''});

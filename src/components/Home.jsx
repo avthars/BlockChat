@@ -238,6 +238,10 @@ export class Home extends Component {
         this.setState({isLoading: true},() => {
             this.getMsgHistory(contact);
         });
+
+        console.log(this.state.msgHistory)
+        console.log(this.state.inTransitMessages)
+        console.log(this.state.receivedMsgs)
         
         var msgHistoryLen = this.state.msgHistory.length 
 
@@ -341,6 +345,7 @@ export class Home extends Component {
 
     //messages conversation from contactId
     fetchMessageData(contactId){
+        this.checkForUpdate(contactId)
         this.setState({isLoading: true});
         const options = { username:  this.state.userId };
         const FILE_NAME = contactId.replace('.id','') + '.json';
