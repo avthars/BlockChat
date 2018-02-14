@@ -85,7 +85,7 @@ class ChatScreen extends Component {
         this.props.writeMessageToTemp(newMsg, this.props.currentContact);
 
         //call parent func to put in blockstack storage
-        this.props.putData(this.state.messageList, this.state.currContact);
+        this.props.putData(this.props.messageList, this.props.currentContact);
     }
 
       render() {
@@ -97,7 +97,7 @@ class ChatScreen extends Component {
                     </div>
                     <InputBar 
                         addMessage = {this.addMessage.bind(this)}
-                        checkForUpdate = {this.props.checkForUpdate}
+                        checkForUpdate = {this.props.checkForUpdate.bind(this)}
                     />
             </div>
         );

@@ -56,16 +56,19 @@ class InputBar extends Component {
         // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
         if ((event.which == 13)  && !event.shiftKey) {
           event.preventDefault();
-          event.stopPropagation();
+          //event.stopPropagation();
           this.onSendMessage(event);
+
+          console.log('message 1')
         }
       }
 
       handleSubmit(event) {
         this.props.setInputBarText(" ");
           event.preventDefault();
-          event.stopPropagation();
+          //event.stopPropagation();
           this.onSendMessage(event);
+          console.log('message 2')
       }
 
       onSendMessage(event){

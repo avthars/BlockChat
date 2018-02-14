@@ -36,7 +36,7 @@ const initialState = {
                             //!< between the currentContact and this user
     lastMessage: {},        //!< A list of last message sent to or received from a user
     contactPictures: {},
-    userName: '',
+    userName: 'felix.id',
     userPic: null,
     userBio: '',
     isSignedIn: false,
@@ -65,7 +65,7 @@ function logInUserReducer(state = initialState, action = {}) {
             isSignedIn: true,
             userProfile: action.payload.userProfile,
             fullUserData: action.payload.fullUserData,
-            userName: action.payload.userName,
+            userName: 'felix.id',
             userPic: action.payload.userPic,
             userBio: action.payload.userBio,
             contactPictures: state.contactPictures
@@ -223,8 +223,8 @@ function setSearchBarTextReducer(state = initialState, action = {}) {
 
 
 function setInputBarTextReducer(state = initialState, action = {}) {
-    //console.log("setInputBarTextReducer");
-    //console.log('Here 9')
+    console.log("setInputBarTextReducer");
+    console.log('Here 9')
     switch (action.type) {
     case SET_INPUT_BAR_TEXT:
         return Object.assign({}, state, {

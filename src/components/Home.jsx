@@ -31,7 +31,11 @@ import {
     updateLoadingStatus,
     addContacts,
     setCurrentContact,
-    updateLastMessage
+    updateLastMessage,
+    updateMessageInTransit,
+    updateMessageReceived,
+    updateMessageHistory,
+    updateClock
   } from '../actions/Actions'
 
 // Get the props from state
@@ -247,9 +251,6 @@ class Home extends Component {
         })
     }
 
-
-
-
     //messages conversation from contactId
     fetchMessageData(contactId){
         this.props.updateLoadingStatus(true);
@@ -349,9 +350,9 @@ class Home extends Component {
                     </div>
 
                     <div className="col-lg-9 col-md-9">
-                        <ChatScreen putData = {this.putDataInStorage} 
-                        writeMessageToTemp = {this.writeMessageToTemp}
-                        checkForUpdate = {this.checkForUpdate}
+                        <ChatScreen putData = {this.putDataInStorage.bind(this)} 
+                        writeMessageToTemp = {this.writeMessageToTemp.bind(this)}
+                        checkForUpdate = {this.checkForUpdate.bind(this)}
                         />
                     </div> 
                 </div>
