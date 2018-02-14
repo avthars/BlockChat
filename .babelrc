@@ -1,5 +1,11 @@
 {
-    "presets":[
-        "es2015", "react"
-    ]
+"presets": [
+    ["env", {
+      "targets": {
+        "node": "current",
+        "uglify": true // needed for cloud build
+      }
+    }],
+    "react"
+  ]
 }
