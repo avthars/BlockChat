@@ -53,7 +53,7 @@ export class ChatScreen extends Component {
 
     //Function to add new message to list
     addMessage(newMsg) {
-        console.log('in add message');
+        console.log('in add message for ' + newMsg);
         //add to local list of tweets
         this.props.writeMessageToTemp(newMsg, this.state.currContact);
         this.setState((prevState, props) => {

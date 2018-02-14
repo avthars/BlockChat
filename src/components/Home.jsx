@@ -217,8 +217,11 @@ export class Home extends Component {
 
     // Writing message to temp file.
     writeMessageToTemp(data, contact){
-        this.state.inTransitMessages.concat(data);
-        this.putInTemp(this.state.inTransitMessages, contact);
+        this.setState((prevState, props) => {
+            return {inTransitMessages: prevState.inTransitMessages.concat(data)};
+          }, () => {
+            this.putInTemp(this.state.inTransitMessages, contact);
+          });
     }
 
     // Checks for updates from the contact
@@ -258,10 +261,16 @@ export class Home extends Component {
             if (this.state.receivedMsgs[i].clock >= lamportTimeClock) {
                 lamportTimeClock = this.state.receivedMsgs[i].clock;
                 if (this.state.receivedMsgs[i].type == "msg"){
-                    this.state.msgHistory.concat(this.state.receivedMsgs[i]);
-                    isUpdate = true;
+                    this.setState((prevState, props) => {
+                        return {msgHistory: prevState.msgHistory.concat(this.state.receivedMsgs[i])};
+                      }, () => {isUpdate = true;});
+                    
                     if (contact == this.state.currContact){
-                        this.state.messageList.concat(this.state.receivedMsgs[i])
+
+                        this.setState((prevState, props) => {
+                            return {messageList: prevState.messageList.concat(this.state.receivedMsgs[i])};
+                          });
+                    
                     }
                 }
             }
