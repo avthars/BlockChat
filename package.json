@@ -4,7 +4,8 @@
   "description": "Encrypted messaging using Blockstack",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "node app.js",
+    "dev": "webpack-dev-server",
     "build": "webpack"
   },
   "repository": {
