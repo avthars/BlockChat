@@ -19,7 +19,6 @@ import {
   } from '../actions/Actions'
 
 const message_text = 'I am here now';
-const time_sent = new Date();
 
 // Get the props from state
 function mapMessageTileStateToProps(state) {
@@ -67,8 +66,26 @@ class MessageTile extends React.Component {
                             //console.log(this.props.lastMessage)
                             //console.log(this.props.lastMessage[contact.id])
                            var lastMessage = {text: ''}
+                           var time_sent = new Date()
                             if (contact.id in this.props.lastMessage) {
                                 lastMessage = this.props.lastMessage[contact.id]
+                                time_sent = new Date(lastMessage.date);
+                            }
+
+                            // TODO: change this because it is dupicate code
+                            var displayTime = time_sent.getHours() + ":";
+                            if (time_sent.getMinutes() < 10) {
+                                displayTime = displayTime + 0 + time_sent.getMinutes() + ":";
+                            } 
+                            else {
+                                displayTime = displayTime + time_sent.getMinutes() + ":";
+                            }
+                            
+                            if (time_sent.getSeconds() < 10) {
+                                displayTime = displayTime + 0 + time_sent.getSeconds();
+                            } 
+                            else {
+                                displayTime = displayTime + time_sent.getSeconds();
                             }
 
                             return (
@@ -84,7 +101,7 @@ class MessageTile extends React.Component {
                                                 <p> 
                                                     <span className="sender-name">{contact.contactName}</span>
                                                     <span className="message-time">
-                                                    {time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()}</span>
+                                                    {displayTime}</span>
                                                 </p>
                                                 <p className="message-snippet">{lastMessage.text}</p>
                                             </div>

@@ -15,7 +15,8 @@ import MessageDisplay from './MessageDisplay.jsx';
 import ChatHeader from './ChatHeader.jsx';
 
 import {
-    addMessage
+    addMessage,
+    updateLastMessage
   } from '../actions/Actions'
 
 // Get the props from state
@@ -23,13 +24,15 @@ function mapChatScreenStateToProps(state) {
     return {
         isSignedIn: state.allReducers.isSignedIn,
         currentContact: state.allReducers.currentContact,
-        messageList: state.allReducers.messageList
+        messageList: state.allReducers.messageList,
+        lastMessage: state.allReducers.lastMessage
     };
 }
 
 //! Link the depatcher for actions we want
 function mapChatScreenDispatchToProps(dispatch) {
     return {
+        updateLastMessage: (userID, newMessage) => dispatch(updateLastMessage(userID, newMessage)),
         addMessage: (message) => dispatch(addMessage(message))
     };
 }
@@ -48,16 +51,40 @@ class ChatScreen extends Component {
     
       constructor() {
           super();
-          this.addMessage = this.addMessage.bind(this);
+
+          this.state = {
+            messageList: '',
+            currContact: '',
+            userId: '',
+        };
+
+        this.addMessage = this.addMessage.bind(this);
       }
 
     //Function to add new message to list
     addMessage(newMsg) {
+    
+      this.props.addMessage(newMsg);
+      
+      // add to storage
+      //this.props.putData(this.props.messageList, this.props.currentContact);
 
-      this.props.addMessage(newMsg, () => {
-        //call parent func to put in blockstack storage
-        this.props.putData(this.props.messageList, this.props.currentContact);
-      });
+        if (this.props.currentContact in this.props.lastMessage) {
+        if (newMsg.date > this.props.lastMessage[this.props.currentContact].date) {
+            this.props.updateLastMessage(this.props.currentContact, newMsg)
+            
+            }
+        } else {
+            this.props.updateLastMessage(this.props.currentContact, newMsg)
+        }
+
+       this.setState((prevState, props) => {
+        //return { messageList: prevState.messageList.concat(newMsg)};
+        }, () => {
+          //call parent func to put in blockstack storage
+          this.props.putData(this.props.messageList, this.props.currentContact);
+        });
+
     }
 
     render() {

@@ -39,6 +39,8 @@ class InputBar extends Component {
     
       constructor() {
           super();
+
+          this.handleSubmit = this.handleSubmit.bind(this)
       }
 
       handleChange(event) {
@@ -46,7 +48,6 @@ class InputBar extends Component {
         // 'text' state field
         //event.target = input field
         //value = current value of it
-        console.log('called here')
         this.props.setInputBarText(event.target.value);
       }
 
@@ -57,8 +58,13 @@ class InputBar extends Component {
           event.stopPropagation();
           this.onSendMessage(event);
         }
+      }
 
-        console.log('here')
+      handleSubmit(event) {
+        this.props.setInputBarText(" ");
+          event.preventDefault();
+          event.stopPropagation();
+          this.onSendMessage(event);
       }
 
       
@@ -87,13 +93,15 @@ class InputBar extends Component {
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
-        this.props.setInputBarText('');
+        this.props.setInputBarText(' ');
       }
 
     render(){
+
+      console.log(this.props.inputBarText)
         return(
           <div className="row" id = "new-message-footer">
-          <form className = "form-inline" onSubmit={this.handleSubmit}>
+          <form className = "form-inline" onSubmit={(event) => this.handleSubmit(event)}>
             <div className = "form-group col-lg-11 col-md-11">
               <textarea className = 'form-control' id="input-box"
                 placeholder = 'Write a message here'

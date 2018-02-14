@@ -154,6 +154,7 @@ function setSearchBarTextReducer(state = initialState, action = {}) {
 
 function setInputBarTextReducer(state = initialState, action = {}) {
     console.log("setInputBarTextReducer");
+    console.log('Here 9')
     switch (action.type) {
     case SET_INPUT_BAR_TEXT:
         return Object.assign({}, state, {
@@ -165,7 +166,7 @@ function setInputBarTextReducer(state = initialState, action = {}) {
 }
 
 function allReducers(state = initialState, action = {}) {
-
+    console.log('Here 7')
     switch (action.type) {
         case LOGIN:
             return logInUserReducer(state, action);
@@ -186,6 +187,7 @@ function allReducers(state = initialState, action = {}) {
             return currentContactReducer(state, action);
         
         case SET_INPUT_BAR_TEXT:
+        console.log('Here 8')
             return setInputBarTextReducer(state, action);
 
         case SET_SEARCH_BAR_TEXT:
