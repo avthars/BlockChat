@@ -20,6 +20,8 @@ function mapInputBarStateToProps(state) {
   return {
       inputBarText: state.allReducers.inputBarText,
       messageList: state.allReducers.messageList,
+      currentContact: state.allReducers.currentContact,
+      currentLamportClock: state.allReducers.currentLamportClock,
       fullUserData: state.allReducers.fullUserData
   };
 }
@@ -39,8 +41,7 @@ class InputBar extends Component {
     
       constructor() {
           super();
-
-          this.handleSubmit = this.handleSubmit.bind(this)
+          this.handleSubmit = this.handleSubmit.bind(this);
       }
 
       handleChange(event) {
@@ -67,8 +68,6 @@ class InputBar extends Component {
           this.onSendMessage(event);
       }
 
-      
-      //When user submits tweet
       onSendMessage(event){
         event.preventDefault();
 
@@ -87,9 +86,12 @@ class InputBar extends Component {
           read: false,
           delivered: false,
           deleted: true,
+          type:"msg",
+          clock: this.props.currentLamportClock, 
         };
 
         //console.log(idnum)
+        this.props.checkForUpdate(this.props.currentContact);
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);

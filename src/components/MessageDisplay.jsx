@@ -26,6 +26,17 @@ function mapMessageDisplayDispatchToProps(dispatch) {
 }
 
 
+import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
+
+
 //**************************************************************
 //InputBox component: Box that displays messages for current chat
 //Props: messageList - list of messages for current chat

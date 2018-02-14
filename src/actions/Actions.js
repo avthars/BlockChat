@@ -20,7 +20,11 @@ import {
     SET_MESSAGE,
     SET_INPUT_BAR_TEXT,
     SET_SEARCH_BAR_TEXT,
-    UPDATE_LAST_SEEN
+    UPDATE_LAST_SEEN,
+    UPDATE_LAMPORT_CLOCK,
+    UP_RECEIVED_MESSAGES,
+    UPDATE_MESSAGE_IN_TRANSIT,
+    UPDATE_MESSAGE_IN_HISTORY
 } from '../constants/ActionTypes';
 
 //! Creates an action to save the date of the user after being logged in
@@ -69,6 +73,30 @@ export const addMessage = text => {
     }
 }
 
+//! Creates an action to add a message
+export const updateMessageReceived = text => {
+    return {
+        type: UP_RECEIVED_MESSAGES,
+        payload: text
+    }
+}
+
+//! Creates an action to add a message
+export const updateMessageInTransit = text => {
+    return {
+        type: UPDATE_MESSAGE_IN_TRANSIT,
+        payload: text
+    }
+}
+
+//! Creates an action to add a message
+export const updateMessageHistory = text => {
+    return {
+        type: UPDATE_MESSAGE_IN_HISTORY,
+        payload: text
+    }
+}
+
 //! Creates an action to send a message
 export const sendMessage = text => {
     return {
@@ -82,6 +110,15 @@ export const updateLastMessage = (usrID, newMessage) => {
     return {
         type: UPDATE_LAST_SEEN,
         payload: { userID: usrID, message: newMessage }
+    }
+}
+
+
+//! Creates an action to send a message
+export const updateClock = (clock) => {
+    return {
+        type: UPDATE_LAMPORT_CLOCK,
+        payload: clock
     }
 }
 

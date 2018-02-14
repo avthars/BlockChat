@@ -20,7 +20,11 @@ import {
     SET_INPUT_BAR_TEXT,
     SET_SEARCH_BAR_TEXT,
     UPDATE_LAST_SEEN,
-    UPDATE_USER_PIC
+    UPDATE_USER_PIC,
+    UPDATE_LAMPORT_CLOCK,
+    UP_RECEIVED_MESSAGES,
+    UPDATE_MESSAGE_IN_TRANSIT,
+    UPDATE_MESSAGE_IN_HISTORY
 } from '../constants/ActionTypes';
 
 //! define an initial state
@@ -36,6 +40,10 @@ const initialState = {
     userPic: null,
     userBio: '',
     isSignedIn: false,
+    currentLamportClock: 0,
+    receivedMsgs: [],
+    inTransitMessages: [],
+    msgHistory: [],
     isLoading: false,
     userProfile: {},        //!< Has userName, userBio and all the other profile information
     fullUserData: {},       //!< Has full data and other stuff like userID etc.
@@ -66,6 +74,7 @@ function logInUserReducer(state = initialState, action = {}) {
        return state;
     }
 }
+
 
 //! Reducer to update contacts
 function addContactsReducer(state = initialState, action = {}) {
@@ -101,6 +110,19 @@ function updateLoadingStatusReducer(state = initialState, action = {}) {
     }
 }
 
+//! Reducer to update contacts
+function updateCurrentLamportClockReducer(state = initialState, action = {}) {
+    //console.log("updateLoadingStatusReducer Called");
+    switch (action.type) {
+    case UPDATE_LAMPORT_CLOCK:
+        return Object.assign({}, state, {
+            currentLamportClock: action.payload
+        });
+    default:
+       return state;
+    }
+}
+
 //! Reducer to handle actions on messages
 //! The payload is a messaege object that is define in? TODO: define this
 function messageReducer(state = initialState, action = {}) {
@@ -113,6 +135,21 @@ function messageReducer(state = initialState, action = {}) {
     case SET_MESSAGE:
         return Object.assign({}, state, {
             messageList: action.payload
+        });
+    
+    case UP_RECEIVED_MESSAGES:
+        return Object.assign({}, state, {
+            receivedMsgs: state.receivedMsgs.concat(action.payload)
+        });
+    
+    case UPDATE_MESSAGE_IN_TRANSIT:
+        return Object.assign({}, state, {
+            inTransitMessages: state.inTransitMessages.concat(action.payload)
+        });
+    
+    case UPDATE_MESSAGE_IN_HISTORY:
+        return Object.assign({}, state, {
+            msgHistory: state.msgHistory.concat(action.payload)
         });
     default:
        return state;
@@ -163,7 +200,9 @@ function currentContactReducer(state = initialState, action = {}) {
     switch (action.type) {
     case SET_CURRENT_CONTACT:
         return Object.assign({}, state, {
-            currentContact: action.payload
+            currentContact: action.payload,
+            receivedMsgs: [],
+            inTransitMessages: []
         });
     default:
        return state;
@@ -213,6 +252,15 @@ function allReducers(state = initialState, action = {}) {
         
         case SET_MESSAGE:
             return messageReducer(state, action);
+        
+        case UP_RECEIVED_MESSAGES:
+            return messageReducer(state, action);
+
+        case UPDATE_MESSAGE_IN_TRANSIT:
+            return messageReducer(state, action);
+
+        case UPDATE_MESSAGE_IN_HISTORY:
+            return messageReducer(state, action);
 
         case SET_CURRENT_CONTACT:
             return currentContactReducer(state, action);
@@ -229,6 +277,9 @@ function allReducers(state = initialState, action = {}) {
 
         case UPDATE_USER_PIC:
             return updateContactPicturesReducer(state, action);
+
+        case UPDATE_LAMPORT_CLOCK:
+            return updateCurrentLamportClockReducer(state, action);
         default:
            return state;
     }

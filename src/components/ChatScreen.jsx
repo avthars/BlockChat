@@ -15,6 +15,16 @@ import MessageDisplay from './MessageDisplay.jsx';
 import ChatHeader from './ChatHeader.jsx';
 
 import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
+
+import {
     addMessage,
     updateLastMessage
   } from '../actions/Actions'
@@ -37,6 +47,7 @@ function mapChatScreenDispatchToProps(dispatch) {
     };
 }
 
+
 //**************************************************************
 //InputBox component: User enters a new message and is 
 //displayed in chat screen
@@ -52,57 +63,44 @@ class ChatScreen extends Component {
       constructor() {
           super();
 
-          this.state = {
-            messageList: '',
-            currContact: '',
-            userId: '',
-        };
-
         this.addMessage = this.addMessage.bind(this);
       }
 
     //Function to add new message to list
     addMessage(newMsg) {
-    
-      this.props.addMessage(newMsg);
-      
-      // add to storage
-      //this.props.putData(this.props.messageList, this.props.currentContact);
+        
+        // add to storage
+        //this.props.putData(this.props.messageList, this.props.currentContact);
+        this.props.addMessage(newMsg);
 
         if (this.props.currentContact in this.props.lastMessage) {
         if (newMsg.date > this.props.lastMessage[this.props.currentContact].date) {
             this.props.updateLastMessage(this.props.currentContact, newMsg)
-            
             }
         } else {
             this.props.updateLastMessage(this.props.currentContact, newMsg)
         }
 
-       this.setState((prevState, props) => {
-        //return { messageList: prevState.messageList.concat(newMsg)};
-        }, () => {
-          //call parent func to put in blockstack storage
-          this.props.putData(this.props.messageList, this.props.currentContact);
-        });
+        //add to local list of tweets
+        this.props.writeMessageToTemp(newMsg, this.props.currentContact);
 
+        //call parent func to put in blockstack storage
+        this.props.putData(this.state.messageList, this.state.currContact);
     }
 
-    render() {
-        if (!this.props.isSignedIn) {
-            return null
-        }
-        else {
-            return (
-                <div>
-                    <ChatHeader/>
-                    <div id="message-display">
-                        <MessageDisplay />
+      render() {
+        return (
+            <div>
+                <ChatHeader/>
+                <div id="message-display">
+                    <MessageDisplay />
                     </div>
-                    
-                    <InputBar addMessage = {this.addMessage.bind(this)}/>
-                </div>
-            );
-        } 
+                    <InputBar 
+                        addMessage = {this.addMessage.bind(this)}
+                        checkForUpdate = {this.props.checkForUpdate}
+                    />
+            </div>
+        );
       }
 }
 
