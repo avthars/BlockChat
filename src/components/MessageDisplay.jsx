@@ -13,6 +13,17 @@ const avatarImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
 const date = new Date(Date.UTC(2013, 1, 1, 14, 0, 0));
 
 
+import {
+    isSignInPending,
+    loadUserData,
+    Person,
+    getFile,
+    putFile,
+    lookupProfile,
+  } from 'blockstack';
+import * as blockstack from 'blockstack';
+
+
 //**************************************************************
 //InputBox component: Box that displays messages for current chat
 //Props: messageList - list of messages for current chat
@@ -27,8 +38,6 @@ export class MessageDisplay extends Component {
           this.state = {
               messageList: this.props.messageList, 
               currContactName: '',
-              currContactProfilePic: '',
-              currContact: '',
             };
       }
 
@@ -44,7 +53,9 @@ export class MessageDisplay extends Component {
 
       render() {
         return (
-            <MessageList messageList = {this.state.messageList} userId={this.props.userId}/>
+            <MessageList messageList = {this.state.messageList}
+             userId={this.props.userId}
+             currContact = {this.props.currContact}/>
         );
       }
 }
@@ -62,6 +73,8 @@ class MessageList extends Component {
         super(props);
         this.state = {};
         this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.userPhotoUrl  = ""
+        this.currContactPhoto = ""
     }
 
     scrollToBottom(){
@@ -76,16 +89,34 @@ class MessageList extends Component {
         this.scrollToBottom();
     }
 
+
+
     render() {
-        console.log(this.props.messageList);
-        console.log(this.props.userId);
+        lookupProfile(this.props.userId, "https://core.blockstack.org/v1/names/")
+            .then((profile) => {
+                this.state.userPhotoUrl = profile.image[0].contentUrl
+            })
+            .catch((error) => {
+                console.log('could not find contact with id: ' + name)
+            }) 
+
+        lookupProfile(this.props.currContact, "https://core.blockstack.org/v1/names/")
+            .then((profile) => {
+                this.state.currContactPhoto = profile.image[0].contentUrl
+            })
+            .catch((error) => {
+                console.log('could not find contact with id: ' + name)
+            }) 
         return(
             <div>
                 <div>
                     <ul className = "list-group">
                         <div className="borderless">
                             {this.props.messageList.map(message => (
-                                <MessageInstance message={message} userId = {this.props.userId} />
+                                <MessageInstance message={message} 
+                                userId = {this.props.userId} 
+                                userPhotoUrl = {this.state.userPhotoUrl}
+                                currContactPhoto = {this.state.currContactPhoto}/>
                             ))}
                         </div>
                     </ul>
@@ -129,13 +160,13 @@ class MessageInstance extends Component {
                 <li className = "list-group-item text-right" key={this.props.message.id}>
                     <div>
                         <div className="my-message-text">
-                            <div className="message-timstamp"> {displayTime} </div>
+                            <div className="message-timstamp"> {} </div>
                             <div className="my-message-body"> 
                                 <p>{this.props.message.text} </p>
                              </div>
                         </div>
                         <div className="sender-message-photo">
-                            <img src={avatarImage} className="img-rounded message-photo"/>
+                            <img src={this.props.userPhotoUrl} className="img-rounded message-photo"/>
                         </div>
                         
                     </div>
@@ -148,10 +179,10 @@ class MessageInstance extends Component {
                 <li className = "list-group-item text-left" key={this.props.message.id}>
                     <div>
                         <div className="sender-message-photo">
-                            <img src={avatarImage} className="img-rounded message-photo"/>
+                            <img src={this.props.currContactPhoto} className="img-rounded message-photo"/>
                         </div>
                         <div className="message-text">
-                            <div className="message-timstamp"> {displayTime} </div>
+                            <div className="message-timstamp"> {} </div>
                             <div className="message-body"> 
                                 <p>{this.props.message.text} </p>
                              </div>

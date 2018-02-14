@@ -32,12 +32,16 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 });
 
 module.exports = {
+  devtool: 'source-map',
   entry: './src/index.js',
+  
   target: 'web',
+
   output: {
     path: path.resolve('public/build'),
     filename: 'index_bundle.js',
   },
+  
   devServer: {
     historyApiFallback: {
       disableDotRule: true
@@ -49,6 +53,7 @@ module.exports = {
       "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
     },
   },
+
   module: {
     rules: [
       { test: /\.json$/, use: 'json-loader' },
