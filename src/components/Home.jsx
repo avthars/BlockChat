@@ -175,21 +175,21 @@ export class Home extends Component {
     // Gets new messages contact has sent to user.
     getContactMsgs(contact){
         const options = {username:contact};
-        const FILE_NAME = this.state.userId.replace('.id','') + '_temp.json';
+        const FILE_NAME = 'radjei_temp.json';
         var messages = []
         getFile(FILE_NAME, options)
-                .then((file) => {
-                  messages = JSON.parse(file || '[]')
-                  this.setState({
-                    receivedMsgs: msgs,
-                  }, () => {
-                    console.log('Messages I have received');
+            .then((file) => {
+                var msgs = JSON.parse(file || '[]')
+                this.setState({
+                receivedMsgs: msgs,
+                }, () => {
+                    console.log('Messages received');
                     console.log(this.state.receivedMsgs);
-                    })
                 })
-                .catch((error) => {
-                  return messages;
-                })
+            })
+            .catch((error) => {
+                this.setState({receivedMsgs: []});
+            })
     }
 
     // Get messages user has sent to contact.
@@ -247,7 +247,7 @@ export class Home extends Component {
         
         var msgHistoryLen = this.state.msgHistory.length 
 
-        // Lamport time clock for checking which messages are new.
+        /* // Lamport time clock for checking which messages are new.
         var lamportTimeClock = 0;
         if (msgHistoryLen > 0) {
             var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
@@ -256,13 +256,13 @@ export class Home extends Component {
             if(!lamportTimeClock){
                 lamportTimeClock = 0;
             }
-        }
+        } */
 
         var isUpdate = false;
         // Go through the received messages list and add the messages that are new to the message history..
         for (var i = 0; i < this.state.receivedMsgs.length; i++){
-            if (this.state.receivedMsgs[i].clock >= lamportTimeClock) {
-                lamportTimeClock = this.state.receivedMsgs[i].clock;
+            if (this.state.receivedMsgs[i].id >= this.state.messageList.length) {
+                //lamportTimeClock = this.state.receivedMsgs[i].clock;
                 if (this.state.receivedMsgs[i].type == "msg"){
                     this.setState((prevState, props) => {
                         return {msgHistory: prevState.msgHistory.concat(this.state.receivedMsgs[i])};
@@ -279,11 +279,11 @@ export class Home extends Component {
             }
         }
 
-        if (contact == this.state.currContact){
+        /* if (contact == this.state.currContact){
             if (lamportTimeClock > this.state.currentLamportClock){
                 this.setState({currentLamportClock: lamportTimeClock,})
             }
-        }
+        } */
 
         if (isUpdate){
 
@@ -296,15 +296,15 @@ export class Home extends Component {
 
             var largestLamportClock = lamportTimeClock;
             for (var i = 0; i < this.state.inTransitMessages; i++) {
-                if (this.state.inTransitMessages[i].clock > lamportTimeClock){
+                if (this.state.inTransitMessages[i].id > this.state.messageList.id){
                     newInTransitmsgs.concat(this.state.inTransitMessages[i])
-                    if (this.state.inTransitMessages[i].clock > largestLamportClock){
+                    /* if (this.state.inTransitMessages[i].clock > largestLamportClock){
                         largestLamportClock = this.state.inTransitMessages[i].clock;
-                    }
+                    } */
                 }
             }
 
-            largestLamportClock++;
+            // largestLamportClock++;
             // Write an acknowledgement message to your temp file.
             // Create a message of type ack and clock number equal to the highest lamport clock you have seen.
             var ackMessage = {

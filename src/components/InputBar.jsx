@@ -57,7 +57,7 @@ export class InputBar extends Component {
         //create the message object
         console.log(this.state.text);
 
-        this.props.checkForUpdate(this.props.currContact);
+        //this.props.checkForUpdate(this.props.currContact);
 
         //create new message
         var idnum = this.props.messageList.length;
