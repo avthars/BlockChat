@@ -175,8 +175,7 @@ export class Home extends Component {
     // Gets new messages contact has sent to user.
     getContactMsgs(contact){
         const options = {username:contact};
-        const name = this.state.userId
-        const FILE_NAME = name.replace('.id','') + '_temp.json';
+        const FILE_NAME = 'radjei_temp.json';
         var messages = []
         getFile(FILE_NAME, options)
             .then((file) => {
@@ -426,7 +425,7 @@ export class Home extends Component {
         }
     
       render() {
-          
+  
         return (
             <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
