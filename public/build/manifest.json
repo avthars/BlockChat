@@ -1,9 +1,9 @@
 {
   "name": "BlockChat",
-  "start_url": "https://blockchat.herokuapp.com",
+  "start_url": "https://blockchatapp.herokuapp.com",
   "description": "The BlockChat App",
   "icons": [{
-    "src": "https://blockchat.herokuapp.com/icon-192x192.png",
+    "src": "https://blockchatapp.herokuapp.com/icon-192x192.png",
     "sizes": "192x192",
     "type": "image/png"
   }]
