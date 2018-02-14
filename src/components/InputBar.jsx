@@ -18,6 +18,7 @@ export class InputBar extends Component {
           super(props);
           this.state = {
               text: '',
+              currLamportClock: this.props.currLamportClock + 1,
           };
       }
 
@@ -39,8 +40,6 @@ export class InputBar extends Component {
         console.log("here now 1");
       }
 
-      
-      //When user submits tweet
       onSendMessage(event){
         event.preventDefault();
         
@@ -65,7 +64,11 @@ export class InputBar extends Component {
           read: false,
           delivered: false,
           deleted: true,
+          type:"msg",
+          clock: this.state.currLamportClock,
         };
+
+        this.props.checkForUpdate(this.props.currContact);
 
         //callback to Chatscreen to display message on screen + put message in user storage
         this.props.addMessage(newMessage);
