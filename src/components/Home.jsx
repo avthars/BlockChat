@@ -281,9 +281,6 @@ export class Home extends Component {
                 for (var i = 0; i < this.state.inTransitMessages.length; i++) {
                     if (this.state.inTransitMessages[i].id > lastMessageId){
                         newInTransitmsgs.concat(this.state.inTransitMessages[i])
-                        if (this.state.inTransitMessages[i].id > lastMessageId){
-                            lastMessageId = this.state.inTransitMessages[i].id;
-                        }
                     }
                 }
 
@@ -299,9 +296,6 @@ export class Home extends Component {
                 for (var i = 0; i < this.state.inTransitMessages.length; i++) {
                     if (this.state.inTransitMessages[i].id > lastMessageId){
                         newInTransitmsgs.concat(this.state.inTransitMessages[i])
-                        if (this.state.inTransitMessages[i].id > lastMessageId){
-                            lastMessageId = this.state.inTransitMessages[i].id;
-                        }
                     }
                 }
 
