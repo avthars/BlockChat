@@ -44,8 +44,6 @@ class MessageTile extends React.Component {
         this.state = {
             //user info  
             currContact: '',
-            contactListMessages: {},
-            contactListLM: {},
           }; 
     }
 
@@ -196,15 +194,24 @@ export class Home extends Component {
                     }
                 }
 
+                var contactObj = {}
+                for(var i = 0; i < this.state.contactList.length; i++){
+                    contactObj = this.state.contactList[i];
+                }
+
                 var isUpdate = false;
                 var newMessages = [];
                 // Go through the messages and remove those you have already seen.
+                if (!contactObj.lastSeen){
+                    contactObj.lastSeen = 0;
+                }
+
                 for (var i = 0; i < this.state.receivedMsgs.length; i++) {
                     console.log(lastMessageId)
                     console.log(this.state.receivedMsgs[i].id)
-                    if (this.state.receivedMsgs[i].id > lastMessageId) {
+                    if (this.state.receivedMsgs[i].id > contactObj.lastSeen) {
                         // Update lastMessageId as you go.
-                        lastMessageId = this.state.receivedMsgs[i].id;
+                        contactObj.lastSeen = this.state.receivedMsgs[i].id;
 
                         // Append those you have not seen to the msg history.
                         if (this.state.receivedMsgs[i].type == "msg") {
@@ -214,6 +221,13 @@ export class Home extends Component {
                 }
 
                 if (newMessages.length > 0){
+                    for(var i = 0; i < this.state.contactList.length; i++){
+                        if (this.state.contactList[i].id == contact){
+                            this.state.contactList[i].lastSeen = newMessages[newMessages.length - 1].id;
+                        }
+                    }
+                    this.props.putContact(this.state.contactList);
+
                     this.setState((prevState, props) => {
                         return {msgHistory: prevState.msgHistory.concat(newMessages)};
                         }, () => {
@@ -457,6 +471,7 @@ export class Home extends Component {
                             putData = {this.putDataInStorage}
                             checkForUpdate = {this.checkForUpdate.bind(this)}
                             writeMessageToTemp = {this.writeMessageToTemp.bind(this)}
+                            contactList = {this.state.contactList}
                             messageList = {this.state.messageList}
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}

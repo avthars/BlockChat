@@ -48,20 +48,22 @@ export class ContactSearch extends Component {
         if (!this.state.text.length) {
           return;
         }
-        
-        //create the message object
-        console.log(this.state.text);
 
-        var name = this.state.text;
+        var alreadyContact = false;
+        for(var i = 0; i < this.state.contactList.length; i++){
+            if (this.state.contactList[i].id == name){
+                alreadyContact = true
+            }
+        }
 
-        console.log(name);
-
-        lookupProfile(name, "https://core.blockstack.org/v1/names/")
+        if (!alreadyContact){
+            lookupProfile(name, "https://core.blockstack.org/v1/names/")
             .then((profile) => {
                 var newContact = {
                     id: name, 
                     contactName: profile.name, 
                     picture: profile.image[0].contentUrl,
+                    lastSeen: 0,
                 };
                 // Add it to the object.
                 this.props.addContact(newContact);
@@ -73,8 +75,9 @@ export class ContactSearch extends Component {
             }) 
 
 
-        // Add it to the object.
-        this.props.addContact(newContact);
+            // Add it to the object.
+            this.props.addContact(newContact);
+        }
 
         //set text in box back to empty after message saved
         this.setState({text: ''});
