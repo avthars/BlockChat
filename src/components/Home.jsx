@@ -196,7 +196,10 @@ export class Home extends Component {
 
                 var contactObj = {}
                 for(var i = 0; i < this.state.contactList.length; i++){
-                    contactObj = this.state.contactList[i];
+                    if (this.state.contactList[i].id == contact){
+                        contactObj = this.state.contactList[i];
+                    }
+                    
                 }
 
                 var isUpdate = false;
