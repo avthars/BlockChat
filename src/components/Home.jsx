@@ -174,22 +174,87 @@ export class Home extends Component {
 
     // Gets new messages contact has sent to user.
     getContactMsgs(contact){
-        const options = {username:contact};
-        const FILE_NAME = 'radjei_temp.json';
+        const CONTACT_MSGS_OPTIONS = {username:contact};
+        var name = this.state.userId;
+        const CONTACT_MSGS_FILE_NAME =  name.replace(".id", "") + '_temp.json';
         var messages = []
-        getFile(FILE_NAME, options)
-            .then((file) => {
-                var msgs = JSON.parse(file || '[]')
-                this.setState({
-                receivedMsgs: msgs,
-                }, () => {
-                    console.log('Messages received');
-                    console.log(this.state.receivedMsgs);
-                })
+        getFile(CONTACT_MSGS_FILE_NAME, CONTACT_MSGS_OPTIONS).then((file) => {
+            var msgs = JSON.parse(file || '[]')
+            this.setState({
+            receivedMsgs: msgs,
+            }, () => {
+                // Do everything involving messageHistory here.
+                var msgHistoryLen = this.state.msgHistory.length;
+                var lastMessageId = 0;
+
+                // Getting the last message id which serves as the lamport clock.
+                if (msgHistoryLen > 0) {
+                    var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
+                    lastMessageId = lastMessage.id
+                    //set lamport clock to 0 if null
+                    if(!lastMessageId){
+                        lastMessageId = 0;
+                    }
+                }
+
+                var isUpdate = false;
+                var newMessages = [];
+                // Go through the messages and remove those you have already seen.
+                for (var i = 0; i < this.state.receivedMsgs.length; i++) {
+                    console.log(lastMessageId)
+                    console.log(this.state.receivedMsgs[i].id)
+                    if (this.state.receivedMsgs[i].id > lastMessageId) {
+                        // Update lastMessageId as you go.
+                        lastMessageId = this.state.receivedMsgs[i].id;
+
+                        // Append those you have not seen to the msg history.
+                        if (this.state.receivedMsgs[i].type == "msg") {
+                            newMessages = newMessages.concat(this.state.receivedMsgs[i]);
+                        }
+                    }
+                }
+
+                if (newMessages.length > 0){
+                    this.setState((prevState, props) => {
+                        return {msgHistory: prevState.msgHistory.concat(newMessages)};
+                        }, () => {
+                        isUpdate = true;
+                        // Write the new updated messages to storage.
+                        this.putDataInStorage(this.state.msgHistory, contact);
+                    });
+
+                        if (contact == this.state.currContact){
+                        this.setState((prevState, props) => {
+                            return {messageList: prevState.messageList.concat(newMessages)};
+                            });
+                    }
+
+                    //this.getSentMsg(contact); Have to do this.
+
+                    // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
+                    var newInTransitmsgs = [];
+        
+                    for (var i = 0; i < this.state.inTransitMessages; i++) {
+                        if (this.state.inTransitMessages[i].id > lastMessageId){
+                            newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                            if (this.state.inTransitMessages[i].id > lastMessageId){
+                                lastMessageId = this.state.inTransitMessages[i].id;
+                            }
+                        }
+                    }
+
+                    this.setState({inTransitMessages: newInTransitmsgs,}, () => {
+                        this.putInTemp(this.state.inTransitMessages, contact);
+                    })   
+                }
             })
-            .catch((error) => {
-                this.setState({receivedMsgs: []});
-            })
+        }).catch((error) => {
+            // If this returns error, assume messages do not exist.
+            // Have not decide what to do there.
+            // Update: Do nothing
+            console.log("No new messages.")
+            console.log(error)
+        })
     }
 
     // Get messages user has sent to contact.
@@ -224,109 +289,19 @@ export class Home extends Component {
     checkForUpdate(contact) {
         // Retrieve new messages the contact has sent.
         
-        this.setState({isLoading: true},() => {
-            this.getContactMsgs(contact);
-        });
-
-        // Retrieve list of messages you have sent.
-        this.setState({isLoading: true},() => {
-            this.getSentMsg(contact);
-        });
-
-        // Retrieve message history between you and the contact.
-        this.setState({isLoading: true},() => {
-            this.getMsgHistory(contact);
-        });
-
-        console.log("msg history");
-        console.log(this.state.msgHistory)
-        console.log("transit messages");
-        console.log(this.state.inTransitMessages)
-        console.log("rec messages");
-        console.log(this.state.receivedMsgs)
-        
-        var msgHistoryLen = this.state.msgHistory.length 
-
-        /* // Lamport time clock for checking which messages are new.
-        var lamportTimeClock = 0;
-        if (msgHistoryLen > 0) {
-            var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
-            lamportTimeClock = lastMessage.clock
-            //set lamport clock to 0 if null
-            if(!lamportTimeClock){
-                lamportTimeClock = 0;
-            }
-        } */
-
-        var isUpdate = false;
-        // Go through the received messages list and add the messages that are new to the message history..
-        for (var i = 0; i < this.state.receivedMsgs.length; i++){
-            if (this.state.receivedMsgs[i].id >= this.state.messageList.length) {
-                //lamportTimeClock = this.state.receivedMsgs[i].clock;
-                if (this.state.receivedMsgs[i].type == "msg"){
-                    this.setState((prevState, props) => {
-                        return {msgHistory: prevState.msgHistory.concat(this.state.receivedMsgs[i])};
-                      }, () => {isUpdate = true;});
-                    
-                    if (contact == this.state.currContact){
-
-                        this.setState((prevState, props) => {
-                            return {messageList: prevState.messageList.concat(this.state.receivedMsgs[i])};
-                          });
-                    
-                    }
-                }
-            }
-        }
-
-        /* if (contact == this.state.currContact){
-            if (lamportTimeClock > this.state.currentLamportClock){
-                this.setState({currentLamportClock: lamportTimeClock,})
-            }
-        } */
-
-        if (isUpdate){
-
-            // Write the new updated messages to storage.
-            putDataInStorage(msgHistory, contact);
-
-
-            // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
-            var newInTransitmsgs = [];
-
-            var largestLamportClock = lamportTimeClock;
-            for (var i = 0; i < this.state.inTransitMessages; i++) {
-                if (this.state.inTransitMessages[i].id > this.state.messageList.id){
-                    newInTransitmsgs.concat(this.state.inTransitMessages[i])
-                    /* if (this.state.inTransitMessages[i].clock > largestLamportClock){
-                        largestLamportClock = this.state.inTransitMessages[i].clock;
-                    } */
-                }
-            }
-
-            // largestLamportClock++;
-            // Write an acknowledgement message to your temp file.
-            // Create a message of type ack and clock number equal to the highest lamport clock you have seen.
-            var ackMessage = {
-                id: 0, 
-                text: "", 
-                by: this.state.userId, 
-                date: Date.now(),
-                read: false,
-                delivered: false,
-                deleted: true,
-                clock: largestLamportClock + 1,// I have to figure out what to put here.
-                type: "ack",
-            }
-
-            newInTransitmsgs.concat(ackMessage);
-
-            this.setState({inTransitMessages: newInTransitmsgs,})
-
-            putInTemp(this.state.inTransitMessages, contact);
-
-        }
-
+            //this.getMsgHistory(contact);
+        const MSG_HISTORY_OPTIONS = { username: this.state.userId };
+        const MSG_HISTORY_FILE_NAME = contact.replace('.id','') + '.json';
+        getFile(MSG_HISTORY_FILE_NAME, MSG_HISTORY_OPTIONS).then((file) => {
+                  var msgs = JSON.parse(file || '[]')
+                  this.setState({
+                    msgHistory: msgs,
+                  },() => {
+                    this.getContactMsgs(contact);
+                    })
+                }).catch((error) => {
+                    this.getContactMsgs(contact);
+                })
     }
 
     // Get history of conversation between the user and the contact.
@@ -425,7 +400,7 @@ export class Home extends Component {
         }
     
       render() {
-  
+          
         return (
             <div className="container-fluid homep">
                 <div className="row flex-xl-nowrap home">
