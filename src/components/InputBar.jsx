@@ -64,10 +64,9 @@ export class InputBar extends Component {
         // id, text, creator, date
         //Note: redux would be useful here to get the current chat partner's userId as well
         var newMessage = {
-          id: idnum, 
           text: this.state.text, 
           by: this.props.userId, 
-          date: Date.now(),
+          id: Date.now(),
           read: false,
           delivered: false,
           deleted: true,
