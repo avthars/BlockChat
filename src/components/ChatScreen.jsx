@@ -57,6 +57,7 @@ export class ChatScreen extends Component {
         console.log('in add message for ');
         console.log(newMsg);
         //add to local list of tweets
+        this.props.checkForUpdate(this.state.currContact)
         //this.props.writeMessageToTemp(newMsg, this.state.currContact);
         this.setState((prevState, props) => {
         //concat new item onto list of old items

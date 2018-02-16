@@ -228,23 +228,7 @@ export class Home extends Component {
                             });
                     }
 
-                    //this.getSentMsg(contact); Have to do this.
-
-                    // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
-                    var newInTransitmsgs = [];
-        
-                    for (var i = 0; i < this.state.inTransitMessages; i++) {
-                        if (this.state.inTransitMessages[i].id > lastMessageId){
-                            newInTransitmsgs.concat(this.state.inTransitMessages[i])
-                            if (this.state.inTransitMessages[i].id > lastMessageId){
-                                lastMessageId = this.state.inTransitMessages[i].id;
-                            }
-                        }
-                    }
-
-                    this.setState({inTransitMessages: newInTransitmsgs,}, () => {
-                        this.putInTemp(this.state.inTransitMessages, contact);
-                    })   
+                    this.getSentMsg(contact, lastMessageId);
                 }
             })
         }).catch((error) => {
@@ -257,7 +241,7 @@ export class Home extends Component {
     }
 
     // Get messages user has sent to contact.
-    getSentMsg(contact){
+    getSentMsg(contact, lastMessageId){
         const options = { username: this.state.userId  };
         const FILE_NAME = contact.replace('.id','') + '_temp.json';
         getFile(FILE_NAME, options).then((file) => {
@@ -267,9 +251,40 @@ export class Home extends Component {
             }, () => {
                 console.log('Messages in transit');
                 console.log(this.state.inTransitMessages);
+                // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
+                var newInTransitmsgs = [];
+        
+                for (var i = 0; i < this.state.inTransitMessages; i++) {
+                    if (this.state.inTransitMessages[i].id > lastMessageId){
+                        newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                        if (this.state.inTransitMessages[i].id > lastMessageId){
+                            lastMessageId = this.state.inTransitMessages[i].id;
+                        }
+                    }
+                }
+
+                this.setState({inTransitMessages: newInTransitmsgs,}, () => {
+                    this.putInTemp(this.state.inTransitMessages, contact);
+                })
             })
         }).catch((error) => {
-            this.setState({inTransitMessages: []});
+            this.setState({inTransitMessages: []}, () =>{
+                // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
+                var newInTransitmsgs = [];
+        
+                for (var i = 0; i < this.state.inTransitMessages; i++) {
+                    if (this.state.inTransitMessages[i].id > lastMessageId){
+                        newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                        if (this.state.inTransitMessages[i].id > lastMessageId){
+                            lastMessageId = this.state.inTransitMessages[i].id;
+                        }
+                    }
+                }
+
+                this.setState({inTransitMessages: newInTransitmsgs,}, () => {
+                    this.putInTemp(this.state.inTransitMessages, contact);
+                })   
+            });
         })
     }
 
