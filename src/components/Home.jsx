@@ -278,7 +278,7 @@ export class Home extends Component {
                 // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
                 var newInTransitmsgs = [];
         
-                for (var i = 0; i < this.state.inTransitMessages; i++) {
+                for (var i = 0; i < this.state.inTransitMessages.length; i++) {
                     if (this.state.inTransitMessages[i].id > lastMessageId){
                         newInTransitmsgs.concat(this.state.inTransitMessages[i])
                         if (this.state.inTransitMessages[i].id > lastMessageId){
@@ -296,7 +296,7 @@ export class Home extends Component {
                 // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
                 var newInTransitmsgs = [];
         
-                for (var i = 0; i < this.state.inTransitMessages; i++) {
+                for (var i = 0; i < this.state.inTransitMessages.length; i++) {
                     if (this.state.inTransitMessages[i].id > lastMessageId){
                         newInTransitmsgs.concat(this.state.inTransitMessages[i])
                         if (this.state.inTransitMessages[i].id > lastMessageId){
