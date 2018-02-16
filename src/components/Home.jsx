@@ -261,25 +261,23 @@ export class Home extends Component {
     getSentMsg(contact){
         const options = { username: this.state.userId  };
         const FILE_NAME = contact.replace('.id','') + '_temp.json';
-        getFile(FILE_NAME, options)
-                .then((file) => {
-                  var msgs = JSON.parse(file || '[]')
-                  this.setState({
-                    inTransitMessages: msgs,
-                  }, () => {
-                      console.log('Messages in transit');
-                      console.log(this.state.inTransitMessages);
-                  })
-                })
-                .catch((error) => {
-                    this.setState({inTransitMessages: []});
-                })
+        getFile(FILE_NAME, options).then((file) => {
+            var msgs = JSON.parse(file || '[]')
+            this.setState({
+            inTransitMessages: msgs,
+            }, () => {
+                console.log('Messages in transit');
+                console.log(this.state.inTransitMessages);
+            })
+        }).catch((error) => {
+            this.setState({inTransitMessages: []});
+        })
     }
 
     // Writing message to temp file.
-    writeMessageToTemp(data, contact){
+    writeMessageToTemp(data, contact) {
         this.setState((prevState, props) => {
-            return {inTransitMessages: prevState.inTransitMessages.concat(data)};
+            return { inTransitMessages: prevState.inTransitMessages.concat(data)};
           }, () => {
             this.putInTemp(this.state.inTransitMessages, contact);
           });
