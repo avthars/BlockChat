@@ -209,6 +209,8 @@ export class Home extends Component {
                     contactObj.lastSeen = 0;
                 }
 
+                console.log(contactObj.lastSeen)
+
                 for (var i = 0; i < this.state.receivedMsgs.length; i++) {
                     console.log(lastMessageId)
                     console.log(this.state.receivedMsgs[i].id)
@@ -223,11 +225,16 @@ export class Home extends Component {
                     }
                 }
 
+                var lastSeenMessage  = 0;
                 if (newMessages.length > 0){
                     for(var i = 0; i < this.state.contactList.length; i++){
                         if (this.state.contactList[i].id == contact){
                             this.state.contactList[i].lastSeen = newMessages[newMessages.length - 1].id;
+                            lastSeenMessage = newMessages[newMessages.length - 1].lastSeen;
                         }
+                    }
+                    if (!lastSeenMessage){
+                        lastSeenMessage = 0;
                     }
                     this.props.putContact(this.state.contactList);
 
@@ -245,7 +252,7 @@ export class Home extends Component {
                             });
                     }
 
-                    this.getSentMsg(contact, lastMessageId);
+                    this.getSentMsg(contact, lastSeenMessage);
                 }
             })
         }).catch((error) => {

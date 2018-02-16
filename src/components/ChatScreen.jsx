@@ -87,6 +87,7 @@ export class ChatScreen extends Component {
                         addMessage = {this.addMessage.bind(this)}
                         messageList = {this.state.messageList}
                         userId = {this.state.userId}
+                        contactList = {this.props.contactList}
                         currContact = {this.state.currContact}
                         currentLamportClock = {this.props.currentLamportClock}
                         checkForUpdate = {this.props.checkForUpdate}

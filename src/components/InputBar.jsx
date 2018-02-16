@@ -57,7 +57,13 @@ export class InputBar extends Component {
         //create the message object
         console.log(this.state.text);
 
+        var lastMessageSeen = 0;
         //this.props.checkForUpdate(this.props.currContact);
+        for(var i = 0; i < this.props.contactList.length; i++){
+          if (this.props.contactList[i].id == this.props.currContact){
+            lastMessageSeen = this.props.contactList[i].lastSeen
+          }
+        }
 
         //create new message
         var idnum = this.props.messageList.length;
@@ -72,6 +78,7 @@ export class InputBar extends Component {
           deleted: true,
           type:"msg",
           clock: this.state.currLamportClock,
+          lastSeen: lastMessageSeen
         };
 
         console.log(newMessage);
