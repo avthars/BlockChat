@@ -54,17 +54,15 @@ export class ChatScreen extends Component {
 
     //Function to add new message to list
     addMessage(newMsg) {
-    
-        this.props.updateLastMessage(newMsg, this.props.currentContact)
         this.props.checkForUpdate(this.state.currContact)
         this.setState((prevState, props) => {
         return {messageList: prevState.messageList.concat(newMsg)};
-        
         }, () => {
             //call parent func to put in blockstack storage
             this.props.putData(this.state.messageList, this.state.currContact);
             this.props.writeMessageToTemp(newMsg, this.state.currContact);
       });
+      this.props.updateLastMessage(newMsg, this.props.currContact)
     }
 
       render() {

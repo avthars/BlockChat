@@ -103,9 +103,12 @@ export class ContactSearch extends Component {
     render(){
         return(
             <div>
-                <button className = "btn btn-primary" onClick={this.handleOpenModal}>
-                New Message
-                </button>
+
+                
+
+                <div className="input-group-addon" id ="new-chat-icon" onClick={this.handleOpenModal} >
+                <i class="fa fa-search"></i></div>
+
                 <ReactModal 
                     isOpen={this.state.showModal}
                     shouldCloseOnEsc={true}

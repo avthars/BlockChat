@@ -48,19 +48,6 @@ export class InputBar extends Component {
       onSendMessage(event){
         event.preventDefault();
 
-        var w;
-        console.log("I AM GOING IN!!!!!!!!!!!!!!!!")
-        if(typeof(Worker) !== "undefined") {
-            if(typeof(w) == "undefined") {
-                w = new Worker("loopMessageFetchingThread.js");
-            }
-            w.onmessage = function(event) {
-                console.log("here we come.")
-            };
-        }
-        
-        //console.log("here now");
-
         if (!this.state.text.length) {
           return;
         }
