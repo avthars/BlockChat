@@ -19,6 +19,8 @@ import {
     getFile,
     putFile,
     lookupProfile,
+    getPublicKeyFromPrivate,
+    encryptECIES,
   } from 'blockstack';
 import * as blockstack from 'blockstack';
 
@@ -143,7 +145,8 @@ export class Home extends Component {
             isLoading: false,
             selected: '',
             currentLamportClock: 0,
-            lastMessage: {}
+            lastMessage: {},
+            pubKey: 'null',
           }; 
         this.putDataInStorage  = this.putDataInStorage.bind(this);
         this.fetchMessageData  = this.fetchMessageData.bind(this);
@@ -198,15 +201,24 @@ export class Home extends Component {
         // Before you put any data in storage, you first try to determine which of you two has the most up to date information.
         // You add to the person who has the most updated.
         //debugging:
+
         console.log('In putData()');
         console.log("Data to be put in storage");
         console.log(data);
         //TO DO: strip contact name of .id
         var rawContact = contactName.replace('.id','');
+
+        const options = { username: rawContact, zoneFileLookupURL: "https://core.blockstack.org/v1/names"}
+        getFile('key.json', options)
+          .then((file) => {
+            this.setState({ pubKey: JSON.parse(file)})
+            console.log("Step One: PubKey Loaded");
+          })
+
         var STORAGE_FILE_PATH = rawContact + '.json';
         console.log('Filename: ' + STORAGE_FILE_PATH);
-        var options = {encrypt: false};
-        let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
+        var options1 = {encrypt: true};
+        let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options1);
 
         // Might have to change this.
         this.setState({messageList: data}, () => {
@@ -221,17 +233,39 @@ export class Home extends Component {
 
     putInTemp(data, contactName) {
         var rawContact = contactName.replace('.id','');
-        var STORAGE_FILE_PATH = rawContact + '_temp.json';
-        var options = {encrypt: false};
-        let success = blockstack.putFile(STORAGE_FILE_PATH, JSON.stringify(data), options);
+        const options = { username: rawContact, zoneFileLookupURL: "https://core.blockstack.org/v1/names"}
+        getFile('key.json', options)
+          .then((file) => {
+            this.setState({ pubKey: JSON.parse(file)}, () => {
+                console.log("Step One: PubKey Loaded");
+
+                const publicKey = this.state.pubKey;
+                      const encryptedData = JSON.stringify(encryptECIES(publicKey, JSON.stringify(data)));
+                      var STORAGE_FILE_PATH = rawContact + '_temp.json';
+                      putFile(STORAGE_FILE_PATH, encryptedData)
+                        .then(() => {
+                          console.log("Shared encrypted file " + STORAGE_FILE_PATH);
+                        })
+                        .catch(e => {
+                          console.log(e);
+                        });
+            })
+            
+          })
     }
 
     // Gets new messages contact has sent to user.
     getContactMsgs(contact){
-        const CONTACT_MSGS_OPTIONS = {username:contact};
+        
+        //decrypt with users appPrivateKey
+        const CONTACT_MSGS_OPTIONS = {decrypt: true, username: contact, 
+            zoneFileLookupURL: "https://core.blockstack.org/v1/names",
+        };
+
         var name = this.state.userId;
         const CONTACT_MSGS_FILE_NAME =  name.replace(".id", "") + '_temp.json';
         var messages = []
+
         getFile(CONTACT_MSGS_FILE_NAME, CONTACT_MSGS_OPTIONS).then((file) => {
             var msgs = JSON.parse(file || '[]')
             this.setState((prevState, props) => {
@@ -344,7 +378,7 @@ export class Home extends Component {
 
     // Get messages user has sent to contact.
     getSentMsg(contact, lastMessageId){
-        const options = { username: this.state.userId  };
+        const options = { decrypt: true, username: this.state.userId, zoneFileLookupURL: "https://core.blockstack.org/v1/names"};
         const FILE_NAME = contact.replace('.id','') + '_temp.json';
         getFile(FILE_NAME, options).then((file) => {
             var msgs = JSON.parse(file || '[]')
@@ -424,7 +458,7 @@ export class Home extends Component {
         // Retrieve new messages the contact has sent.
         
             //this.getMsgHistory(contact);
-        const MSG_HISTORY_OPTIONS = { username: this.state.userId };
+        const MSG_HISTORY_OPTIONS = {decrypt:true, username: this.state.userId, zoneFileLookupURL: "https://core.blockstack.org/v1/names"};
         const MSG_HISTORY_FILE_NAME = contact.replace('.id','') + '.json';
         getFile(MSG_HISTORY_FILE_NAME, MSG_HISTORY_OPTIONS).then((file) => {
                   var msgs = JSON.parse(file || '[]')
@@ -442,7 +476,7 @@ export class Home extends Component {
 
     // Get history of conversation between the user and the contact.
     getMsgHistory(contactId) {
-        const options = { username: this.state.userId };
+        const options = { decrypt: true, username: this.state.userId, zoneFileLookupURL: "https://core.blockstack.org/v1/names"};
         const FILE_NAME = contactId.replace('.id','') + '.json';
         console.log(FILE_NAME);
         var msgs = [];
@@ -473,7 +507,7 @@ export class Home extends Component {
         console.log('IN FETCH DATA FOR' + contactId);
         this.checkForUpdate(contactId)
         this.setState({isLoading: true});
-        const options = {};
+        const options = {decrypt: true, zoneFileLookupURL: "https://core.blockstack.org/v1/names"};
         const FILE_NAME = contactId.replace('.id','') + '.json';
         console.log(FILE_NAME);
         var oldMessages = this.state.messageList;
@@ -507,6 +541,18 @@ export class Home extends Component {
 
     //TEMPORARY: Assume there was a message while you were offline, pull data from currContact
     componentDidMount(){
+
+        //get user's public key and make it pub file
+        const publicKey = getPublicKeyFromPrivate(loadUserData().appPrivateKey)
+        putFile('key.json', JSON.stringify(publicKey))
+        .then(() => {
+            console.log("Saved!");
+            console.log(JSON.stringify(publicKey));
+          })
+          .catch(e => {
+            console.log(e);
+          });
+
         this.setState({isLoading: true},() => {
             this.fetchMessageData(this.state.currContact);
         });
