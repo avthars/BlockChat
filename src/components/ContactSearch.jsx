@@ -82,16 +82,8 @@ export class ContactSearch extends Component {
 
     render(){
         return(
-            <form>
-                <div className="input-group">
-                    <div className="input-group-addon" onClick = {(event) => this.onSendMessage(event)} ><i className="fa fa-search"></i></div>
-                    <input type="text" className="form-control"
-                        id="inlineFormInputGroup"
-                        placeholder="Search BlockChat"
-                        onChange={(event) => this.handleChange(event)}
-                        value={this.state.text}/>
-                </div>
-            </form>
+            <div className="input-group-addon" id ="new-chat-icon" onClick={this.handleOpenModal} >
+                <i class="fa fa-search"></i></div>
         );
 
     }
