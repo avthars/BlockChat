@@ -605,7 +605,8 @@ export class Home extends Component {
                             <div className="search-bar">
                                 <ContactSearch 
                                 contactList = {this.state.contactList}
-                                addContact = {this.addContact.bind(this)}/>
+                                addContact = {this.addContact.bind(this)}
+                                handleSignOut = {this.props.handleSignOut}/>
                             </div>
 
                             <div className="messages-sidebar">

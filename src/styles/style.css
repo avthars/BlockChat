@@ -81,6 +81,17 @@ body {
     height: 50px;
 }
 
+#new-chat-icon {
+    float: right;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+#sign-out-button {
+    float: left;
+    margin-left: 0px;
+}
+
 /* picture of the other user sending the message */
 .other-user-pic {
     position: absolute;

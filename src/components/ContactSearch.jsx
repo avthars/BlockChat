@@ -103,11 +103,15 @@ export class ContactSearch extends Component {
     render(){
         return(
             <div>
+                <div>
+                    <div onClick={this.handleOpenModal} >
+                    <i className="fa fa-edit" id ="new-chat-icon"></i></div>
 
-                
-
-                <div className="input-group-addon" id ="new-chat-icon" onClick={this.handleOpenModal} >
-                <i class="fa fa-search"></i></div>
+                    <div>
+                        <button type="button" class="button4" id ="sign-out-button"
+                        onClick={this.props.handleSignOut} >Logout</button>
+                    </div>
+                </div>
 
                 <ReactModal 
                     isOpen={this.state.showModal}
