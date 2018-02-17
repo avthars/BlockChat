@@ -62,7 +62,7 @@ export class ChatScreen extends Component {
             this.props.putData(this.state.messageList, this.state.currContact);
             this.props.writeMessageToTemp(newMsg, this.state.currContact);
       });
-      this.props.updateLastMessage(newMsg, this.props.currContact)
+      //this.props.updateLastMessage(newMsg, this.state.currContact)
     }
 
       render() {
