@@ -57,6 +57,7 @@
     "react-dom": "^15.5.4",
     "react-modal": "^3.2.1",
     "react-router-dom": "^4.2.2",
+    "save": "^2.3.2",
     "style-loader": "^0.16.1",
     "uglify-es-webpack-plugin": "^0.10.0",
     "url-loader": "^0.5.8",

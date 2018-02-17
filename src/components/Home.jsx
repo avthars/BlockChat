@@ -44,6 +44,7 @@ class MessageTile extends React.Component {
         this.state = {
             //user info  
             currContact: '',
+            lastMessage: this.props.lastMessage,
           }; 
     }
 
@@ -51,8 +52,8 @@ class MessageTile extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             currContact: nextProps.currContact,
+            lastMessage: nextProps.lastMessage,
         }, () => {
-            console.log(this.state);
         });
     }
 
@@ -63,7 +64,33 @@ class MessageTile extends React.Component {
         <table className="table table-hover">
             <tbody>
             {
-                this.props.contactList.map((contact) => {  
+                this.props.contactList.map((contact) => { 
+
+                    var lastMessage = {text: ''}
+
+                    var time_sent = new Date()
+                    if (contact.id in this.state.lastMessage) {
+                        lastMessage = this.state.lastMessage[contact.id]
+                        time_sent = new Date(lastMessage.id);
+                    }
+
+                    // TODO: change this because it is dupicate code
+                    var displayTime = time_sent.getHours() + ":";
+                    if (time_sent.getMinutes() < 10) {
+                        displayTime = displayTime + 0 + time_sent.getMinutes() + ":";
+                    } 
+                    else {
+                        displayTime = displayTime + time_sent.getMinutes() + ":";
+                    }
+                    
+                    if (time_sent.getSeconds() < 10) {
+                        displayTime = displayTime + 0 + time_sent.getSeconds();
+                    } 
+                    else {
+                        displayTime = displayTime + time_sent.getSeconds();
+                    }
+
+
                     return (
                         <tr onClick={(e) => this.props.clickedMessageTile(contact.id, e)} 
                             className ={(this.state.currContact == contact.id) ? 'success' : 'none'}>
@@ -78,9 +105,9 @@ class MessageTile extends React.Component {
                                 <p> 
                                     <span className="sender-name">{contact.contactName}</span>
                                     <span className="message-time">
-                                    {/*time_sent.getHours() + ":" + time_sent.getMinutes() + ":" + time_sent.getSeconds()*/}</span>
+                                    {displayTime} </span>
                                 </p>
-                                 <p className="message-snippet">{"Hey there!  Whats"}</p> 
+                                 <p className="message-snippet">{lastMessage.text}</p> 
                             </div>
                         </div>
                         </td></tr>
@@ -116,11 +143,13 @@ export class Home extends Component {
             isLoading: false,
             selected: '',
             currentLamportClock: 0,
+            lastMessage: {}
           }; 
         this.putDataInStorage  = this.putDataInStorage.bind(this);
         this.fetchMessageData  = this.fetchMessageData.bind(this);
         this.clickedMessageTile = this.clickedMessageTile.bind(this);
         this.getContactMsgs = this.getContactMsgs.bind(this);
+        this.updateLastMessage = this.updateLastMessage.bind(this);
       }
 
       //update component when parent state changes
@@ -134,6 +163,32 @@ export class Home extends Component {
               console.log('Home state:');
               console.log(this.state);
           });
+      }
+
+      // Function to update last messages
+      updateLastMessage(lastMessge, userId) {
+
+        console.log("IN UPDATE MESSAGES")
+        if (this.state.lastMessage.length > 0) {
+            if (contactId in this.state.lastMessage) {
+                console.log("IN CHECK")
+                if (lastMessge.date <= this.state.lastMessage[contactId].date) {
+                    return;
+                }
+            } 
+        }
+        console.log("AFTER CHECK")
+        console.log(userId)
+        console.log(lastMessge)
+
+        this.setState((prevState, props) => {
+            var lastMessages = prevState.lastMessage;
+            lastMessages[userId] = lastMessge;
+            return {lastMessage: lastMessages};
+        }, () => {
+            console.log("NEW ARRAY OF LAST MESSAGES")
+            console.log(this.state.lastMessage)
+        });
       }
 
     //puts contact data into users blockstack storage
@@ -369,24 +424,21 @@ export class Home extends Component {
         const FILE_NAME = contactId.replace('.id','') + '.json';
         console.log(FILE_NAME);
         var oldMessages = this.state.messageList;
-        getFile(FILE_NAME, options)
-                .then((file) => {
-                  var msgs = JSON.parse(file || '[]')
-                  this.setState({
-                    messageList: msgs,
-                  }, () => {
-                      console.log('Messages after fetching messages from contact ' + contactId);
-                      console.log(this.state.messageList);
-                  })
-                })
-                .catch((error) => {
-                  console.log('could not fetch messages from ' + contactId)
-                  //reset state back to before load
-                  this.setState({messageList: []});
-                })
-                .finally(() => {
-                  this.setState({isLoading: false});
-                })
+        getFile(FILE_NAME, options).then((file) => {
+            var msgs = JSON.parse(file || '[]')
+            this.setState({
+            messageList: msgs,
+            }, () => {
+                // add the last message if we have not seen it
+                console.log("UPDATE MESSAGE")
+                this.updateLastMessage(msgs[msgs.length - 1], contactId)
+            })
+        }).catch((error) => {
+            //reset state back to before load
+            this.setState({messageList: []});
+        }).finally(() => {
+            this.setState({isLoading: false});
+        })
     }
 
     clickedMessageTile(data, e) {
@@ -438,7 +490,7 @@ export class Home extends Component {
                     <div className="col-12 col-lg-3 col-md-4 col-xl-2 bd-sidebar">
                         <div className="profile-sidebar">
                             <div className="profile-userpic">
-                                <img src={this.props.userPic} onClick={(e) => this.clickedMessageTile("Felix", e)} className="img-rounded avatar"/>
+                                <img src={this.props.userPic} className="img-rounded avatar"/>
                             </div>
 
                             <div className="text-center username-id">
@@ -463,6 +515,7 @@ export class Home extends Component {
                                     currContact = {this.state.currContact} 
                                     messageList = {this.state.messageList}
                                     userName = {this.state.userName}
+                                    lastMessage = {this.state.lastMessage}
                                     currentLamportClock = {this.state.currentLamportClock}
                                     clickedMessageTile = {this.clickedMessageTile.bind(this)}
                                 />
@@ -479,6 +532,7 @@ export class Home extends Component {
                             messageList = {this.state.messageList}
                             currContact = {this.state.currContact}
                             userId = {this.state.userId}
+                            updateLastMessage = {this.updateLastMessage}
                         />
                     </div> 
                 </div>
