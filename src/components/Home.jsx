@@ -110,9 +110,9 @@ export class Home extends Component {
             currContact: '',
             //messages for current chat
             messageList: [],
-            msgHistory: [],
-            receivedMsgs: [],
-            inTransitMessages:[],
+            msgHistory: {},
+            receivedMsgs: {},
+            inTransitMessages:{},
             isLoading: false,
             selected: '',
             currentLamportClock: 0,
@@ -133,6 +133,8 @@ export class Home extends Component {
           }, () => {
               console.log('Home state:');
               console.log(this.state);
+              console.log(this.props.contactList)
+               // var myVar = setInterval(this.messageUpdator(this.state.contactList), 1000);
           });
       }
 
@@ -177,16 +179,23 @@ export class Home extends Component {
         var messages = []
         getFile(CONTACT_MSGS_FILE_NAME, CONTACT_MSGS_OPTIONS).then((file) => {
             var msgs = JSON.parse(file || '[]')
-            this.setState({
-            receivedMsgs: msgs,
+            this.setState((prevState, props) => {
+                var receivedMsg = prevState.receivedMsgs;
+                receivedMsg[contact] = msgs;
+                return {receivedMsgs: receivedMsg};
             }, () => {
                 // Do everything involving messageHistory here.
-                var msgHistoryLen = this.state.msgHistory.length;
+                console.log("LETS GOOOOOOOOO 45 !!!!!")
+                console.log(this.state.msgHistory)
+                var msgHistoryLen = this.state.msgHistory[contact].length;
                 var lastMessageId = 0;
+                if (!msgHistoryLen){
+                    console.log("LETS GOOOOOOOOO!!!!!")
+                }
 
                 // Getting the last message id which serves as the lamport clock.
                 if (msgHistoryLen > 0) {
-                    var lastMessage = this.state.msgHistory[msgHistoryLen - 1]
+                    var lastMessage = this.state.msgHistory[contact][msgHistoryLen - 1]
                     lastMessageId = lastMessage.id
                     //set lamport clock to 0 if null
                     if(!lastMessageId){
@@ -202,6 +211,8 @@ export class Home extends Component {
                     
                 }
 
+                console.log("LETS GOOOOOOOOO 2 !!!!!")
+
                 var isUpdate = false;
                 var newMessages = [];
                 // Go through the messages and remove those you have already seen.
@@ -211,19 +222,21 @@ export class Home extends Component {
 
                 console.log(contactObj.lastSeen)
 
-                for (var i = 0; i < this.state.receivedMsgs.length; i++) {
+                for (var i = 0; i < this.state.receivedMsgs[contact].length; i++) {
                     console.log(lastMessageId)
-                    console.log(this.state.receivedMsgs[i].id)
-                    if (this.state.receivedMsgs[i].id > contactObj.lastSeen) {
+                    console.log(this.state.receivedMsgs[contact][i].id)
+                    if (this.state.receivedMsgs[contact][i].id > contactObj.lastSeen) {
                         // Update lastMessageId as you go.
-                        contactObj.lastSeen = this.state.receivedMsgs[i].id;
+                        contactObj.lastSeen = this.state.receivedMsgs[contact][i].id;
 
                         // Append those you have not seen to the msg history.
-                        if (this.state.receivedMsgs[i].type == "msg") {
-                            newMessages = newMessages.concat(this.state.receivedMsgs[i]);
+                        if (this.state.receivedMsgs[contact][i].type == "msg") {
+                            newMessages = newMessages.concat(this.state.receivedMsgs[contact][i]);
                         }
                     }
                 }
+
+                console.log("LETS GOOOOOOOOO 3 !!!!!")
 
                 var lastSeenMessage  = 0;
                 if (newMessages.length > 0){
@@ -233,18 +246,28 @@ export class Home extends Component {
                             lastSeenMessage = newMessages[newMessages.length - 1].lastSeen;
                         }
                     }
+
+                    console.log("LETS GOOOOOOOOO 4 !!!!!")
+
+
                     if (!lastSeenMessage){
                         lastSeenMessage = 0;
                     }
                     this.props.putContact(this.state.contactList);
 
+
                     this.setState((prevState, props) => {
-                        return {msgHistory: prevState.msgHistory.concat(newMessages)};
-                        }, () => {
+                        var msgHist = prevState.msgHistory;
+                        console.log("Hello 1111")
+                        msgHist[contact] = prevState.msgHistory[contact].concat(newMessages);
+                        return {msgHistory: msgHist}
+                    }, () => {
                         isUpdate = true;
                         // Write the new updated messages to storage.
-                        this.putDataInStorage(this.state.msgHistory, contact);
+                        this.putDataInStorage(this.state.msgHistory[contact], contact);
                     });
+
+                    console.log("LETS GOOOOOOO 5")
 
                         if (contact == this.state.currContact){
                         this.setState((prevState, props) => {
@@ -270,37 +293,52 @@ export class Home extends Component {
         const FILE_NAME = contact.replace('.id','') + '_temp.json';
         getFile(FILE_NAME, options).then((file) => {
             var msgs = JSON.parse(file || '[]')
-            this.setState({
-            inTransitMessages: msgs,
+            this.setState((prevState, props) => {
+                var inTransitMsg = prevState.inTransitMessages;
+                inTransitMsg[contact] = msgs;
+                return {inTransitMessages:inTransitMsg};
             }, () => {
                 console.log('Messages in transit');
                 console.log(this.state.inTransitMessages);
                 // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
                 var newInTransitmsgs = [];
         
-                for (var i = 0; i < this.state.inTransitMessages.length; i++) {
-                    if (this.state.inTransitMessages[i].id > lastMessageId){
-                        newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                for (var i = 0; i < this.state.inTransitMessages[contact].length; i++) {
+                    if (this.state.inTransitMessages[contact][i].id > lastMessageId){
+                        newInTransitmsgs.concat(this.state.inTransitMessages[contact][i])
                     }
                 }
 
-                this.setState({inTransitMessages: newInTransitmsgs,}, () => {
-                    this.putInTemp(this.state.inTransitMessages, contact);
+                this.setState((prevState, props) => {
+
+                    var inTransitMsg = prevState.inTransitMessages;
+                    inTransitMsg[contact] = newInTransitmsgs;
+                    return {inTransitMessages: inTransitMsg};
+                }, () => {
+                    this.putInTemp(this.state.inTransitMessages[contact], contact);
                 })
             })
         }).catch((error) => {
-            this.setState({inTransitMessages: []}, () =>{
+            this.setState((prevState, props) => {
+                var inTransitMsg = prevState.receivedMsgs;
+                inTransitMsg[contact] = [];
+                return {inTransitMessages: inTransitMsg};
+            }, () =>{
                 // Remove all messages with clock value less that lamportTimeClock from inTransitMessages.
                 var newInTransitmsgs = [];
         
-                for (var i = 0; i < this.state.inTransitMessages.length; i++) {
-                    if (this.state.inTransitMessages[i].id > lastMessageId){
-                        newInTransitmsgs.concat(this.state.inTransitMessages[i])
+                for (var i = 0; i < this.state.inTransitMessages[contact].length; i++) {
+                    if (this.state.inTransitMessages[contact][i].id > lastMessageId){
+                        newInTransitmsgs.concat(this.state.inTransitMessages[contact][i])
                     }
                 }
 
-                this.setState({inTransitMessages: newInTransitmsgs,}, () => {
-                    this.putInTemp(this.state.inTransitMessages, contact);
+                this.setState((prevState, props) => {
+                    var inTransitMsg = prevState.inTransitMessages;
+                    inTransitMsg[contact] = newInTransitmsgs;
+                    return {inTransitMessages: inTransitMsg};
+                }, () => {
+                    this.putInTemp(this.state.inTransitMessages[contact], contact);
                 })   
             });
         })
@@ -309,10 +347,21 @@ export class Home extends Component {
     // Writing message to temp file.
     writeMessageToTemp(data, contact) {
         this.setState((prevState, props) => {
-            return { inTransitMessages: prevState.inTransitMessages.concat(data)};
-          }, () => {
-            this.putInTemp(this.state.inTransitMessages, contact);
+            var inTransitMsg = prevState.inTransitMessages;
+            inTransitMsg[contact] = prevState.inTransitMessages[contact].concat(data);
+            return {inTransitMessages: inTransitMsg};
+        }, () => {
+            this.putInTemp(this.state.inTransitMessages[contact], contact);
           });
+    }
+
+    messageUpdator(contacts) {
+        console.log("I AM THE ONE")
+        console.log("Hello I got it here ")
+        for (var i = 0; i < contacts.length; i++){
+            var contact  = contacts[i].id;
+            this.checkForUpdate(contact);
+        }
     }
 
     // Checks for updates from the contact
@@ -324,9 +373,11 @@ export class Home extends Component {
         const MSG_HISTORY_FILE_NAME = contact.replace('.id','') + '.json';
         getFile(MSG_HISTORY_FILE_NAME, MSG_HISTORY_OPTIONS).then((file) => {
                   var msgs = JSON.parse(file || '[]')
-                  this.setState({
-                    msgHistory: msgs,
-                  },() => {
+                  this.setState((prevState, props) => {
+                    var msgHist = prevState.msgHistory;
+                    msgHist[contact] = msgs;
+                    return {msgHistory: msgHist}
+                },() => {
                     this.getContactMsgs(contact);
                     })
                 }).catch((error) => {
@@ -343,9 +394,11 @@ export class Home extends Component {
         getFile(FILE_NAME, options)
                 .then((file) => {
                   msgs = JSON.parse(file || '[]')
-                  this.setState({
-                    msgHistory: msgs,
-                  },() => {
+                  this.setState((prevState, props) => {
+                    var msgHist = prevState.msgHistory;
+                    msgHist[contact] = msgs;
+                    return {msgHistory: msgHist}
+                },() => {
                     console.log('Messages History');
                     console.log(this.state.msgHistory);
                     })
