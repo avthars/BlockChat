@@ -82,8 +82,16 @@ export class ContactSearch extends Component {
 
     render(){
         return(
-            <div className="input-group-addon" id ="new-chat-icon" onClick={this.handleOpenModal} >
-                <i class="fa fa-search"></i></div>
+
+                <div>
+                    <div onClick = {(event) => this.onSendMessage(event)} >
+                    <i className="fa fa-edit" id ="new-chat-icon"></i></div>
+
+                    <div>
+                        <button type="button" class="button4" id ="sign-out-button">Logout</button>
+                    </div>
+                    
+                </div>
         );
 
     }

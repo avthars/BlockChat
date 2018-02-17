@@ -82,11 +82,14 @@ body {
 }
 
 #new-chat-icon {
-    position: absolute;
+    float: right;
     margin-top: 5px;
-    margin-left: 10px;
-    height: 20px;
-    width: 20px;
+    margin-right: 10px;
+}
+
+#sign-out-button {
+    float: left;
+    margin-left: 0px;
 }
 
 /* picture of the other user sending the message */
